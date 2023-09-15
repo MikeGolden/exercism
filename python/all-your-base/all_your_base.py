@@ -1,40 +1,52 @@
 def rebase(input_base, digits, output_base):
     """
-    Convert a number from one base to another.
+    Converts a number from one base to another.
 
     Args:
-        digits (str): The number represented as a string in the source base.
-        input_base (int): The source base.
-        output_base (int): The target base.
+        input_base (int): The base of the input number (must be >= 2).
+        digits (list): A list of digits representing the input number in the input base.
+        output_base (int): The desired base for the output number (must be >= 2).
 
     Returns:
-        str: The number represented as a string in the target base.
+        list: A list of digits representing the output number in the output base.
 
     Raises:
-        ValueError: If input or output bases are invalid.
+        ValueError: If the input base or output base is less than 2.
+        ValueError: If any digit is outside the range [0, input_base).
+
+    Example:
+        >>> rebase(10, [1, 0], 2)
+        [1, 0]
     """
-
-    
-    if input_base < 2 or output_base < 2 \
-            or any(digit >= input_base or digit < 0 for digit in digits):
+    # Check if input and output bases are valid
+    if input_base < 2:
         raise ValueError("input base must be >= 2")
-
+    
     if output_base < 2:
-        raise ValueError("Output base must be >= 2")
+        raise ValueError("output base must be >= 2")
+
+    # Check if all digits are within the valid range
+    for digit in digits:
+        if digit < 0 or digit >= input_base:
+            raise ValueError("all digits must satisfy 0 <= d < input base")
 
     i = 1
     number = 0
     output = []
 
+    # Convert input digits to decimal
     for digit in reversed(digits):
         number += i * digit
         i *= input_base
 
+    # Convert decimal number to output base
     while number > 0:
         output.append(number % output_base)
         number //= output_base
 
+    # Handle the case when the output is zero
     if output == []:
         return [0]
 
+    # Reverse the output list to get the correct order
     return output[::-1]
