@@ -1,124 +1,69 @@
-class Forth:
-
-    def __init__(self):
-        self._stack = []
-        self._definitions = {}
-
-    def stack(self):
-        return self._stack
-
-    def eval(self, data):
-        ops = data.lower().split()[::-1]
-
-        while ops != []:
-            op = ops.pop()
-
-            if op in self._definitions:
-                self.eval(self._definitions[op])
-            elif op == "+":
-                self.add()
-            elif op == "-":
-                self.sub()
-            elif op == "*":
-                self.mul()
-            elif op == "/":
-                self.div()
-            elif op == "dup":
-                self.dup()
-            elif op == "drop":
-                self.drop()
-            elif op == "swap":
-                self.swap()
-            elif op == "over":
-                self.over()
-            elif op == ":":
-                find_semicolon = False
-                ops_ = []
-
-                while ops != []:
-                    op_ = ops.pop()
-
-                    if op_ == ";":
-                        find_semicolon = True
-                        break
-                    elif op_ == ":":
-                        break
-                    else:
-                        ops_.append(op_)
-
-                if not find_semicolon or len(ops_) < 2:
-                    raise ValueError("undefined operation")
-                try:
-                    int(ops_[0])
-                except ValueError:
-                    pass
-                else:
-                    raise ValueError("illegal operation")
-
-                self.define(ops_)
-            else:
-                self._stack.append(int(op))
-
-    def define(self, ops):
-        for i in range(1, len(ops)):
-            if ops[i] in self._definitions:
-                ops[i] = self._definitions[ops[i]]
-            elif ops[i] not in ["+", "-", "*", "/", "dup", "drop", "swap", "over"]:
-                int(ops[i])
-        self._definitions[ops[0]] = " ".join(ops[1:])
-
-    def dup(self):
-        if self._stack == []:
-            raise StackUnderflowError("Insufficient number of items in stack")
-        self._stack.append(self._stack[-1])
-
-    def drop(self):
-        if self._stack == []:
-            raise StackUnderflowError("Insufficient number of items in stack")
-        self._stack.pop()
-
-    def swap(self):
-        x, y = self.pop2()
-        self._stack.extend([x, y])
-
-    def over(self):
-        x, y = self.pop2()
-        self._stack.extend([y, x, y])
-
-    def add(self):
-        x, y = self.pop2()
-        self._stack.append(y + x)
-
-    def sub(self):
-        x, y = self.pop2()
-        self._stack.append(y - x)
-
-    def mul(self):
-        x, y = self.pop2()
-        self._stack.append(y * x)
-
-    def div(self):
-        x, y = self.pop2()
-        if x == 0:
-            raise ZeroDivisionError("divide by zero")
-        self._stack.append(y // x)
-
-    def pop2(self):
-        if len(self._stack) < 2:
-            raise StackUnderflowError("Insufficient number of items in stack")
-        return (self._stack.pop(), self._stack.pop())
+import inspect
+from itertools import chain
+import string
 
 
-def evaluate(input_data):
-    forth = Forth()
-    for data in input_data:
-        forth.eval(data)
-    return forth.stack()
+OPS = {
+    '+':    lambda x, y: [y + x],
+    '-':    lambda x, y: [y - x],
+    '*':    lambda x, y: [y * x],
+    '/':    lambda x, y: [y // x],
+    'dup':  lambda x:    [x, x],
+    'drop': lambda _:    [],
+    'swap': lambda x, y: [x, y],
+    'over': lambda x, y: [y, x, y],
+}
 
 
 class StackUnderflowError(Exception):
-    """Exception raised when Stack is not full.
-       message: explanation of the error.
-    """
-    def __init__(self, message):
-        self.message = message
+    def __init__(self):
+        super().__init__('Insufficient number of items in stack')
+
+
+class ZeroDivisonError(Exception):
+    def __init__(self):
+        super().__init__('divide by zero')
+
+
+def is_number(elem):
+    return elem and (set(elem) < set(string.digits)
+                     or (elem[0] == '-' and is_number(elem[1:])))
+
+
+def apply(stack, elem):
+    if is_number(elem):
+        stack.append(int(elem))
+    elif elem in OPS:
+        op = OPS[elem]
+        count = len(inspect.signature(op).parameters)
+        print(elem, count)
+        if len(stack) < count:
+            raise StackUnderflowError
+        stack.extend(op(*(stack.pop() for x in range(count))))
+    else:
+        raise ValueError('undefined operation')
+
+
+def substitute(custom, elems):
+    return list(chain(*(custom[x] if x in custom else [x] for x in elems)))
+
+
+def evaluate(input_data):
+    stack = []
+    custom = {}
+    try:
+        for line in input_data:
+            elems = line.lower().split()
+            if elems[0] == ':':
+                assert elems[-1] == ';'
+                op = elems[1]
+                if is_number(op):
+                    raise ValueError('illegal operation')
+                custom[op] = substitute(custom, elems[2:-1])
+            else:
+                elems = substitute(custom, elems)
+                for elem in elems:
+                    apply(stack, elem)
+        return stack
+    except ZeroDivisionError:
+        raise ZeroDivisionError('divide by zero') # come on now exercism
