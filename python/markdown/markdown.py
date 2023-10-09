@@ -1,52 +1,27 @@
 import re
 
 def parse(markdown):
-    start_list = False  # Flag to track if we're inside an unordered list
-    lines = [parse_line(line) for line in markdown.splitlines()]  # Split the markdown into lines and parse each line
+    s = markdown  # Assign the input Markdown to variable 's'
 
-    # Iterate through the parsed lines to handle list formatting
-    for i in range(len(lines)):
-        if not start_list and re.match(r'<li>', lines[i]):
-            lines[i] = '<ul>' + lines[i]  # Open an unordered list if not already inside one
-            start_list = True
-        elif start_list and (i == len(lines) - 1 or not re.match(r'<li>', lines[i + 1])):
-            lines[i] += '</ul>'  # Close the unordered list if the next line is not part of the list
-            start_list = False
+    # Replace double underscores with <strong> tags
+    s = re.sub(r'__([^\n]+?)__', r'<strong>\1</strong>', s)
 
-    return ''.join(lines)  # Join the parsed lines to form the final HTML content
+    # Replace single underscores with <em> tags
+    s = re.sub(r'_([^\n]+?)_', r'<em>\1</em>', s)
 
+    # Replace lines starting with '*' with <li> tags, treating each line as a list item
+    s = re.sub(r'^\* (.*?$)', r'<li>\1</li>', s, flags=re.M)
 
-def parse_line(markdown):
-    markdown = emphasis(markdown)  # Apply emphasis (strong and em) formatting to the line
+    # Wrap the entire list (group of <li> items) with <ul> tags
+    s = re.sub(r'(<li>.*</li>)', r'<ul>\1</ul>', s, flags=re.S)
 
-    if is_header(markdown):
-        i = markdown.index(' ')
-        return '<h{0}>{1}</h{0}>'.format(i, markdown[i + 1:])  # Format as a header
-    elif is_unordered_list(markdown):
-        return '<li>{}</li>'.format(markdown[2:])  # Format as a list item
-    else:
-        return '<p>{}</p>'.format(markdown)  # Format as a paragraph
+    # Replace lines starting with '#' (headers) with <h1> to <h6> tags, depending on the number of '#' characters
+    for i in range(6, 0, -1):
+        s = re.sub(r'^{} (.*?$)'.format('#' * i), r'<h{0}>\1</h{0}>'.format(i), s, flags=re.M)
 
+    # Wrap lines not matching any specific tag patterns with <p> tags
+    s = re.sub(r'^(?!<[hlu])(.*?$)', r'<p>\1</p>', s, flags=re.M)
 
-def emphasis(markdown):
-    while re.match(r'(.*)__(.*)__(.*)', markdown):
-        i = markdown.index('__')
-        j = markdown.rindex('__')
-        markdown = '{}<strong>{}</strong>{}'.format(
-            markdown[:i], markdown[i + 2:j], markdown[j + 2:])  # Replace double underscores with <strong> tags
+    s = re.sub(r'\n', '', s)  # Remove newline characters
 
-    while re.match(r'(.*)_(.*)_(.*)', markdown):
-        i = markdown.index('_')
-        j = markdown.rindex('_')
-        markdown = '{}<em>{}</em>{}'.format(
-            markdown[:i], markdown[i + 1:j], markdown[j + 1:])  # Replace single underscores with <em> tags
-
-    return markdown  # Return the modified markdown
-
-
-def is_header(markdown):
-    return re.match(r'#{1,6} (.+)', markdown)  # Check if the line is a header (starts with one or more '#')
-
-
-def is_unordered_list(markdown):
-    return re.match(r'\* (.*)', markdown)  # Check if the line is an unordered list item (starts with '*')
+    return s  # Return the parsed HTML
