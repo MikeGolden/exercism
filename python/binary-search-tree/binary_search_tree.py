@@ -1,47 +1,50 @@
 class TreeNode:
+
     def __init__(self, data, left=None, right=None):
         self.data = data
         self.left = left
         self.right = right
 
     def __str__(self):
-        return f'TreeNode(data={self.data}, left={self.left}, right={self.right})'
+        fmt = 'TreeNode(data={}, left={}, right={})'
+        return fmt.format(self.data, self.left, self.right)
 
 
 class BinarySearchTree:
+
     def __init__(self, tree_data):
         self.root = None
-        # Build the binary search tree from the input list
         for data in tree_data:
             self.insert(data)
 
     def insert(self, data):
-        # Helper function to insert a new node with the given data
-        def insert_recursive(node, data):
-            if node is None:
-                return TreeNode(data)
-            if data <= node.data:
-                node.left = insert_recursive(node.left, data)
+        if self.root is None:
+            self.root = TreeNode(data)
+        elif data <= self.root.data:
+            if self.root.left is None:
+                self.root.left = TreeNode(data)
             else:
-                node.right = insert_recursive(node.right, data)
-            return node
-
-        self.root = insert_recursive(self.root, data)
+                left_tree = BinarySearchTree([])
+                left_tree.root = self.root.left
+                left_tree.insert(data)
+        else:
+            if self.root.right is None:
+                self.root.right = TreeNode(data)
+            else:
+                right_tree = BinarySearchTree([])
+                right_tree.root = self.root.right
+                right_tree.insert(data)
 
     def data(self):
-        # Return the data stored in the root node
-        if self.root:
-            return self.root.data
-        else:
-            raise ValueError("Tree is empty")
+        return self.root
 
     def sorted_data(self):
-        # Perform an in-order traversal of the binary search tree to get sorted data
-        def in_order_traversal(node):
-            if node is None:
-                return []
-            left_data = in_order_traversal(node.left)
-            right_data = in_order_traversal(node.right)
-            return left_data + [node.data] + right_data
+        if self.root is None:
+            return []
 
-        return in_order_traversal(self.root)
+        left_tree = BinarySearchTree([])
+        left_tree.root = self.root.left
+        right_tree = BinarySearchTree([])
+        right_tree.root = self.root.right
+
+        return left_tree.sorted_data() + [self.root.data] + right_tree.sorted_data()
