@@ -1,52 +1,42 @@
-def resistor_label(colors):
-    # Dictionary mapping color names to their numerical values.
-    resistors = {
-        "black": 0,
-        "brown": 1,
-        "red": 2,
-        "orange": 3,
-        "yellow": 4,
-        "green": 5,
-        "blue": 6,
-        "violet": 7,
-        "grey": 8,
-        "white": 9,
-    }
+COLOR_LIST = [
+    "black",
+    "brown",
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "violet",
+    "grey",
+    "white"
+]
 
-    # Dictionary mapping tolerance color names to their tolerance values.
-    tolerance_values = {
-        "grey": 0.05,
-        "violet": 0.1,
-        "blue": 0.25,
-        "green": 0.5,
-        "brown": 1,
-        "red": 2,
-        "gold": 5,
-        "silver": 10,
-    }
+COLOR_TOLERANCES = {
+    "grey": 0.05,
+    "violet": 0.1,
+    "blue": 0.25,
+    "green": 0.5,
+    "brown": 1,
+    "red": 2,
+    "gold": 5,
+    "silver": 10
+}
 
-    # Calculate resistance value based on the first three colors.
-    resistance_value = int(f"{resistors[colors[0]]}{resistors[colors[1]]}")
+MAGNITUDES = [
+    (1000000, "mega"), 
+    (1000, "kilo"), 
+    (1, "")
+]
 
-    # Check if there is a multiplier (fourth color) present.
-    if len(colors) > 3 and colors[3] != "black":
-        multiplier = 10 ** resistors[colors[3]]
-        resistance_value *= multiplier
 
-    # Determine tolerance value based on the last color.
-    tolerance = tolerance_values[colors[-1]]
-
-    # Format resistance value based on magnitude (kiloohms, megaohms).
-    if resistance_value >= 1000000:
-        magnitude = "megaohms"
-        resistance_value /= 1000000
-    elif resistance_value >= 1000:
-        magnitude = "kiloohms"
-        resistance_value /= 1000
-    else:
-        magnitude = "ohms"
-
-    # Format the result string with resistance value and tolerance.
-    result = f"{int(resistance_value)} {magnitude} ±{tolerance}%"
-
-    return result
+def resistor_label(colors: list[str]) -> str:
+    if len(colors) == 1:
+        return "0 ohms"
+    *value_colors, multiplier_color, tolerance_color = colors
+    base_value = sum(COLOR_LIST.index(color) * 10 ** exponent for exponent, color in enumerate(value_colors[::-1]))
+    multiplier = COLOR_LIST.index(multiplier_color)
+    multiplied_value = base_value * 10 ** multiplier
+    tolerance = COLOR_TOLERANCES[tolerance_color]
+    for magnitude, prefix in MAGNITUDES:
+        if multiplied_value > magnitude:
+            return f"{multiplied_value / magnitude:g} {prefix}ohms ±{tolerance}%"
