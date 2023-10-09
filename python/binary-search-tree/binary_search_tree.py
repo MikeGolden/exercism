@@ -1,63 +1,62 @@
+"""
+Exercism solution for "binary-search-tree"
+"""
+from typing import Any, List, Generator
 class TreeNode:
-    def __init__(self, data, left=None, right=None):
-        # Initialize a TreeNode with data and optional left/right children
+    """
+    Simple implementation of a node for a binary search tree.
+    """
+    def __init__(self, data: Any, left: "TreeNode" = None, right: "TreeNode" = None) -> None:
         self.data = data
         self.left = left
         self.right = right
-
-    def __str__(self):
-        # Define a string representation for TreeNode objects
-        fmt = 'TreeNode(data={}, left={}, right={})'
-        return fmt.format(self.data, self.left, self.right)
-
-
+    def __str__(self) -> None:
+        return f"{self.__class__.__name__}(data={self.data}, left={self.left}, right={self.right})"
 class BinarySearchTree:
-    def __init__(self, tree_data):
-        # Initialize a BinarySearchTree with the given list of data
-        self.root = None  # Initialize the root as None
-        for data in tree_data:
-            self.insert(data)  # Insert each data element into the tree
-
-    def insert(self, data):
-        # Insert a new data element into the binary search tree
-        if self.root is None:
-            # If the tree is empty, create a new TreeNode as the root
-            self.root = TreeNode(data)
-        elif data <= self.root.data:
-            # If the data is less than or equal to the root's data, insert to the left
-            if self.root.left is None:
-                # If there's no left child, create a new TreeNode as the left child
-                self.root.left = TreeNode(data)
+    """
+    Simple implementation of a binary search tree.
+    """
+    def __init__(self, tree_data: List[Any]) -> None:
+        self.root = TreeNode(tree_data[0])
+        for value in tree_data[1:]:
+            self.add(value)
+    def add(self, value: Any) -> None:
+        """
+        Add the given value to the tree.
+        """
+        stack = [self.root]
+        while stack:
+            root = stack.pop()
+            if value <= root.data:
+                if root.left is None:
+                    root.left = TreeNode(value)
+                    return
+                stack.append(root.left)
             else:
-                # If there's a left child, create a new BinarySearchTree for left subtree
-                left_tree = BinarySearchTree([])
-                left_tree.root = self.root.left
-                left_tree.insert(data)
-        else:
-            # If the data is greater than the root's data, insert to the right
-            if self.root.right is None:
-                # If there's no right child, create a new TreeNode as the right child
-                self.root.right = TreeNode(data)
-            else:
-                # If there's a right child, create a new BinarySearchTree for right subtree
-                right_tree = BinarySearchTree([])
-                right_tree.root = self.root.right
-                right_tree.insert(data)
-
-    def data(self):
-        # Return the root node's data
+                if root.right is None:
+                    root.right = TreeNode(value)
+                    return
+                stack.append(root.right)
+    @classmethod
+    def inorder(cls, node: "TreeNode") -> Generator[Any, None, None]:
+        """
+        Iterate over the tree's nodes in order.
+        """
+        if node != None:
+            for left in cls.inorder(node.left):
+                yield left
+            yield node
+            for right in cls.inorder(node.right):
+                yield right
+    def __iter__(self):
+        return iter((n.data for n in self.inorder(self.root)))
+    def data(self) -> "TreeNode":
+        """
+        Return the root node.
+        """
         return self.root
-
-    def sorted_data(self):
-        # Return sorted data from the binary search tree
-        if self.root is None:
-            return []
-
-        # Create BinarySearchTree instances for left and right subtrees
-        left_tree = BinarySearchTree([])
-        left_tree.root = self.root.left
-        right_tree = BinarySearchTree([])
-        right_tree.root = self.root.right
-
-        # Recursively retrieve sorted data from left subtree, root, and right subtree
-        return left_tree.sorted_data() + [self.root.data] + right_tree.sorted_data()
+    def sorted_data(self) -> List[int]:
+        """
+        Return the sorted data held in the tree.
+        """
+        return list(self)
