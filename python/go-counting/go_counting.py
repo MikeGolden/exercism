@@ -1,39 +1,48 @@
+WHITE, BLACK, NONE = "W", "B", " "
+
 
 class Board:
-    """Count territories of each player in a Go game
-
-    Args:
-        board (list[str]): A two-dimensional Go board
-    """
 
     def __init__(self, board):
-        pass
+        self.board = [list(row) for row in board]
 
     def territory(self, x, y):
-        """Find the owner and the territories given a coordinate on
-           the board
+        if x < 0 or x >= len(self.board[0]) or y < 0 or y >= len(self.board):
+            raise ValueError('Invalid coordinate')
+        if self.board[y][x] != NONE:
+            return (NONE, set())
 
-        Args:
-            x (int): Column on the board
-            y (int): Row on the board
+        stones = [(x, y)]
+        stone = set()
+        seen = set()
+        territory = set()
 
-        Returns:
-            (str, set): A tuple, the first element being the owner
-                        of that area.  One of "W", "B", "".  The
-                        second being a set of coordinates, representing
-                        the owner's territories.
-        """
-        pass
+        while stones != []:
+            x, y = stones.pop()
+            if self.board[y][x] == NONE:
+                if x > 0 and (x - 1, y) not in seen:
+                    stones.append((x - 1, y))
+                if x < len(self.board[0]) - 1 and (x + 1, y) not in seen:
+                    stones.append((x + 1, y))
+                if y > 0 and (x, y - 1) not in seen:
+                    stones.append((x, y - 1))
+                if y < len(self.board) - 1 and (x, y + 1) not in seen:
+                    stones.append((x, y + 1))
+                seen.add((x, y))
+                territory.add((x, y))
+            else:
+                stone.add(self.board[y][x])
+
+        stone = NONE if len(stone) % 2 == 0 else stone.pop()
+
+        return (stone, territory)
 
     def territories(self):
-        """Find the owners and the territories of the whole board
+        territories = {BLACK: set(), WHITE: set(), NONE: set()}
 
-        Args:
-            none
+        for y in range(len(self.board)):
+            for x in range(len(self.board[0])):
+                stone, territory = self.territory(x, y)
+                territories[stone].update(territory)
 
-        Returns:
-            dict(str, set): A dictionary whose key being the owner
-                        , i.e. "W", "B", "".  The value being a set
-                        of coordinates owned by the owner.
-        """
-        pass
+        return territories
