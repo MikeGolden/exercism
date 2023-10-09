@@ -1,87 +1,59 @@
-# Define a Node class for creating nodes in the linked list.
 class Node:
-    def __init__(self, value):
-        self.value = value           # Store the value of the node.
-        self.next_node = None        # Initialize the reference to the next node as None.
-
-
-# Define a LinkedList class to create and manipulate a singly linked list.
+    def __init__(self, value, succeeding=None, previous=None):
+        self.value = value
+        self.succeeding = succeeding
+        self.previous = previous
 class LinkedList:
     def __init__(self):
-        self.head = None             # Initialize an empty linked list with the head set to None.
-
-    # Add a new node with the given value to the front (head) of the linked list.
+        head_guard_node = Node(None)
+        tail_guard_node = Node(None)
+        head_guard_node.succeeding = tail_guard_node
+        tail_guard_node.previous = head_guard_node
+        self.head = head_guard_node
+        self.tail = tail_guard_node
+        self.length = 0
+    # insert value at back
     def push(self, value):
-        new_node = Node(value)        # Create a new node with the given value.
-        new_node.next_node = self.head  # Set the new node's next_node to the current head.
-        self.head = new_node          # Update the head to the new node.
-
-    # Remove and return the value of the node at the front (head) of the linked list.
+        self.insert(self.tail.previous, self.tail, value)
+    # remove value at back
     def pop(self):
-        if not self.head:
-            raise IndexError("List is empty")  # Raise an error if the list is empty.
-        popped_value = self.head.value         # Get the value of the head node.
-        self.head = self.head.next_node       # Update the head to the next node.
-        return popped_value                   # Return the value of the removed node.
-
-    # Remove and return the value of the node at the end of the linked list.
-    def shift(self):
-        if not self.head:
-            raise IndexError("List is empty")  # Raise an error if the list is empty.
-        current = self.head
-
-        if not current.next_node:
-            self.head = None                   # If there's only one node, set the head to None.
-        else:
-            while current.next_node.next_node:
-                current = current.next_node    # Iterate to the second-to-last node.
-            shifted_value = current.next_node.value  # Get the value of the last node.
-            current.next_node = None           # Remove the reference to the last node.
-            return shifted_value               # Return the value of the removed node.
-
-    # Add a new node with the given value to the end of the linked list.
+        return self.remove(self.tail.previous)
+    # insert value at front
     def unshift(self, value):
-        new_node = Node(value)                # Create a new node with the given value.
-        if not self.head:
-            self.head = new_node              # If the list is empty, set the head to the new node.
-        else:
-            current = self.head
-            while current.next_node:
-                current = current.next_node    # Iterate to the last node.
-            current.next_node = new_node      # Append the new node to the last node.
-
-    # Return the length (number of nodes) of the linked list.
+        self.insert(self.head, self.head.succeeding, value)
+    # remove value at front
+    def shift(self):
+        return self.remove(self.head.succeeding)
     def __len__(self):
-        length = 0
-        current = self.head
-        while current:
-            length += 1                        # Count nodes while iterating through the list.
-            current = current.next_node
-        return length
-
-    # Create an iterator for the linked list to allow iteration over its values.
-    def __iter__(self):
-        current = self.head
-        while current:
-            yield current.value               # Yield the value of each node during iteration.
-            current = current.next_node
-
-    # Delete the first occurrence of a node with the given value from the linked list.
+        return self.length
     def delete(self, value):
-        current = self.head
-        prev = None
-        found = False
+        if self.length == 0:
+            raise ValueError('Value not found')
+        curr_node = self.head
+        while curr_node is not None:
+            if curr_node.value == value:
+                self.remove(curr_node)
+                return
+            curr_node = curr_node.succeeding
+        raise ValueError('Value not found')
+    def insert(self, previous, succeeding, value):
+        new_node = Node(value, succeeding, previous)
+        succeeding.previous = new_node
+        previous.succeeding = new_node
+        self.length += 1
+    def remove(self, node):
+        if self.length == 0:
+            raise IndexError('List is empty')
+        node.previous.succeeding = node.succeeding
+        node.succeeding.previous = node.previous
+        self.length -= 1
+        return node.value
+        
 
-        while current:
-            if current.value == value:
-                found = True
-                if prev:
-                    prev.next_node = current.next_node  # Remove the node from the list.
-                else:
-                    self.head = current.next_node
-                break
-            prev = current
-            current = current.next_node
+          
 
-        if not found:
-            raise ValueError("Value not found")  # Raise an error if the value is not found in the list.
+
+            
+
+
+          
