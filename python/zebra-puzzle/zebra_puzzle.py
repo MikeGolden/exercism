@@ -1,25 +1,25 @@
 from itertools import permutations
 
-
+# Define lists for nations, colors, pets, drinks, and smokes
 _nations = ["Norwegian", "Ukrainian", "Englishman", "Spaniard", "Japanese"]
 yellow, blue, red, ivory, green = range(5)
 fox, horse, snails, dog, zebra = range(5)
 water, tea, milk, orange_juice, coffee = range(5)
 kools, chesterfield, old_gold, lucky_strike, parliament = range(5)
 
-
+# Function to find the resident who drinks water
 def drinks_water():
     for house in solution():
         if house["drink"] == water:
             return house["nation"]
 
-
+# Function to find the resident who owns the zebra
 def owns_zebra():
     for house in solution():
         if house["pet"] == zebra:
             return house["nation"]
 
-
+# Function to find a valid solution to the puzzle
 def solution():
     for nations in permutations(_nations):
         for colors in permutations(range(5)):
@@ -33,11 +33,11 @@ def solution():
                             "drink": drinks[i],
                             "smoke": smokes[i],
                         } for i in range(5)]
-
+                        # Check if all constraints are satisfied
                         if all(func(houses) for func in check_funcs):
                             return houses
 
-
+# Define functions to check the known constraints
 def known1(houses):
     return len(houses) == 5
 
@@ -124,7 +124,7 @@ def known15(houses):
                 return True
             return False
 
-
+# List of functions to check all known constraints
 check_funcs = [
     known1,
     known2,
