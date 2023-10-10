@@ -22,19 +22,8 @@ export function getItem(cards, position) {
  * @returns {number[]} the cards with the change applied
  */
 export function setItem(cards, position, replacementCard) {
-    // Check if the position is within the valid range
-    if (position < 0 || position >= cards.length) {
-      throw new Error('Invalid position');
-    }
-  
-    // Create a copy of the original cards array
-    const newCards = [...cards];
-  
-    // Replace the card at the specified position with the replacementCard
-    newCards[position] = replacementCard;
-  
-    // Return the modified array
-    return newCards;
+  cards[position] = replacementCard;
+  return cards;
 }
 
 /**
@@ -46,14 +35,8 @@ export function setItem(cards, position, replacementCard) {
  * @returns {number[]} the cards with the newCard applied
  */
 export function insertItemAtTop(cards, newCard) {
-  // Create a copy of the original cards array
-  const newCards = [...cards];
-
-  // Add the newCard to the end of the array
-  newCards.push(newCard);
-
-  // Return the modified array
-  return newCards;
+  cards.push(newCard);
+  return cards;
 }
 
 /**
@@ -65,13 +48,8 @@ export function insertItemAtTop(cards, newCard) {
  * @returns {number[]} the cards without the removed card
  */
 export function removeItem(cards, position) {
-  // Create a copy of the original cards array
-  const newCards = [...cards];
-
-  // Remove the card at the 0-based position
-  newCards.shift();
-
-  return newCards;
+  cards.splice(position, 1);
+  return cards;
 }
 
 /**
@@ -82,9 +60,8 @@ export function removeItem(cards, position) {
  * @returns {number[]} the cards without the removed card
  */
 export function removeItemFromTop(cards) {
-  const newCards = [...cards];
-  newCards.pop()
-  return newCards;
+  cards.pop();
+  return cards;
 }
 
 /**
@@ -96,22 +73,20 @@ export function removeItemFromTop(cards) {
  * @returns {number[]} the cards including the new card
  */
 export function insertItemAtBottom(cards, newCard) {
-  const newCards = [...cards];
-  newCards.unshift(newCard);
-  return newCards;
+  cards.unshift(newCard);
+  return cards;
 }
 
 /**
- * Remove card from the beginning of the cards
+ * Remove card from the beginning of the cards cards
  *
  * @param {number[]} cards
  *
  * @returns {number[]} the cards without the removed card
  */
 export function removeItemAtBottom(cards) {
-  const newCards = [...cards];
-  newCards.shift();
-  return newCards;
+  cards.shift();
+  return cards;
 }
 
 /**
@@ -123,6 +98,5 @@ export function removeItemAtBottom(cards) {
  * @returns {boolean} true if there are exactly stackSize number of cards, false otherwise
  */
 export function checkSizeOfStack(cards, stackSize) {
-  // Check if the length of the cards array is equal to stackSize
   return cards.length === stackSize;
 }
