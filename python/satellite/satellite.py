@@ -1,22 +1,23 @@
 def tree_from_traversals(preorder, inorder):
+    if len(preorder) != len(inorder):
+        raise ValueError('traversals must have the same length')
+    if set(preorder) != set(inorder):
+        raise ValueError('traversals must have the same elements')
     if len(preorder) != len(set(preorder)):
-        raise ValueError("traversals must have the same length")
-    elif len(inorder) != len(set(inorder)):
-        raise ValueError("traversals must contain unique items")
-    elif set(preorder) != set(inorder):
-        raise ValueError("traversals must have the same elements")
-        
-    return build_from_traversals(preorder, inorder)
-
-
-def build_from_traversals(preorder, inorder):
-    if preorder == []:
+        raise ValueError('traversals must contain unique items')
+    return build_tree(preorder, inorder)
+def build_tree(preorder, inorder):
+    '''
+    I broke the recursive part into a separate function
+    only because the initial assertions only have to be
+    checked once.
+    '''
+    if len(preorder) == 0:
         return {}
-
-    i = inorder.index(preorder[0])
-
+    value = preorder[0]
+    idx = inorder.index(value)
     return {
-        "v": preorder[0],
-        "l": build_from_traversals(preorder[1:i + 1], inorder[:i]),
-        "r": build_from_traversals(preorder[i + 1:], inorder[i + 1:]),
+        'v': value,
+        'l': build_tree(preorder[1:1+idx], inorder[:idx]),
+        'r': build_tree(preorder[idx+1:], inorder[idx+1:]),
     }
