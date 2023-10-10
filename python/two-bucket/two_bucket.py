@@ -1,49 +1,28 @@
-def measure(bucket1, bucket2, goal, start_bucket):
+def measure(bucket_one, bucket_two, goal, start_bucket):
+    visited = set()
+    queue = []
     if start_bucket == "one":
-        liter1 = bucket1
-        liter2 = 0
-    elif start_bucket == "two":
-        liter1 = 0
-        liter2 = bucket2
-
-    return bfs(bucket1, bucket2, liter1, liter2, goal, start_bucket)
-
-
-def bfs(bucket1, bucket2, liter1, liter2, goal, start_bucket):
-    states = [(liter1, liter2)]
-    seen = set()
-    move_count = 1
-
-    while states != []:
-        new_states = []
-
-        for liter1, liter2 in states:
-            if liter1 == goal:
-                return (move_count, "one", liter2)
-            elif liter2 == goal:
-                return (move_count, "two", liter1)
-
-            for liter1, liter2 in move(bucket1, bucket2, liter1, liter2):
-                if start_bucket == "one" and liter1 == 0 and liter2 == bucket2:
-                    continue
-                if start_bucket == "two" and liter2 == 0 and liter1 == bucket1:
-                    continue
-                if (liter1, liter2) not in seen:
-                    new_states.append((liter1, liter2))
-                    seen.add((liter1, liter2))
-
-        states = new_states
-        move_count += 1
-
-    return None
-
-
-def move(bucket1, bucket2, liter1, liter2):
-    return [
-        (0, liter2),
-        (liter1, 0),
-        (bucket1, liter2),
-        (liter1, bucket2),
-        (max(liter1 + liter2, bucket2) - bucket2, min(liter1 + liter2, bucket2)),
-        (min(liter1 + liter2, bucket1), max(liter1 + liter2, bucket1) - bucket1)
-    ]
+        queue.append((bucket_one, 0, 1))
+        invalid = (0, bucket_two)
+    else:
+        queue.append((0, bucket_two, 1))
+        invalid = (bucket_one, 0)
+    while queue:
+        b1, b2, step = queue.pop(0)
+        if b1 == goal: return step, 'one', b2
+        if b2 == goal: return step, 'two', b1
+            
+        if (b1, b2) in visited or (b1, b2) == invalid:
+            continue
+        visited.add((b1, b2))
+        # Pouring one bucket into the other bucket until either: a) the first bucket is empty b) the second bucket is full
+        queue.append((min(b1 + b2, bucket_one), b2 - (min(b1 + b2, bucket_one) - b1), step + 1))
+        queue.append((b1 - (min(b1 + b2, bucket_two) - b2), min(b1 + b2, bucket_two), step + 1))
+        # Emptying a bucket and doing nothing to the other.
+        queue.append((b1, 0, step + 1))
+        queue.append((0, b2, step + 1))
+        # Filling a bucket and doing nothing to the other.
+        queue.append((bucket_one, b2, step + 1))
+        queue.append((b1, bucket_two, step + 1))
+    raise ValueError("No Solution Possible")
+    
