@@ -1,4 +1,4 @@
-import math
+from math import sqrt, exp, cos, sin
 
 class ComplexNumber:
     def __init__(self, real: float, imaginary: float):
@@ -10,7 +10,22 @@ class ComplexNumber:
         """
         self.real = real
         self.imaginary = imaginary
+        self.norm = real ** 2 + imaginary ** 2  # Norm of the complex number
 
+    def _force_complex_other(func):
+        """
+        A decorator that ensures the input is converted to a ComplexNumber.
+
+        :param func: The function to be decorated.
+        :return: A decorated function.
+        """
+        def wrapper(self, other):
+            if not isinstance(other, ComplexNumber):
+                other = ComplexNumber(other, 0)
+            return func(self, other)
+        return wrapper
+
+    @_force_complex_other
     def __eq__(self, other: 'ComplexNumber') -> bool:
         """
         Compare two complex numbers for equality.
@@ -20,6 +35,7 @@ class ComplexNumber:
         """
         return self.real == other.real and self.imaginary == other.imaginary
 
+    @_force_complex_other
     def __add__(self, other: 'ComplexNumber') -> 'ComplexNumber':
         """
         Add two complex numbers.
@@ -27,10 +43,15 @@ class ComplexNumber:
         :param other: The complex number to add.
         :return: The result of the addition as a new complex number.
         """
-        real_part = self.real + other.real
-        imaginary_part = self.imaginary + other.imaginary
-        return ComplexNumber(real_part, imaginary_part)
+        new_real = self.real + other.real
+        new_imaginary = self.imaginary + other.imaginary
+        return ComplexNumber(new_real, new_imaginary)
 
+    @_force_complex_other
+    def __radd__(self, other: 'ComplexNumber') -> 'ComplexNumber':
+        return other + self
+
+    @_force_complex_other
     def __mul__(self, other: 'ComplexNumber') -> 'ComplexNumber':
         """
         Multiply two complex numbers.
@@ -38,10 +59,16 @@ class ComplexNumber:
         :param other: The complex number to multiply by.
         :return: The result of the multiplication as a new complex number.
         """
-        real_part = (self.real * other.real) - (self.imaginary * other.imaginary)
-        imaginary_part = (self.real * other.imaginary) + (self.imaginary * other.real)
-        return ComplexNumber(real_part, imaginary_part)
+        a, b, c, d = self.real, self.imaginary, other.real, other.imaginary
+        new_real = a * c - b * d
+        new_imaginary = b * c + a * d
+        return ComplexNumber(new_real, new_imaginary)
 
+    @_force_complex_other
+    def __rmul__(self, other: 'ComplexNumber') -> 'ComplexNumber':
+        return other * self
+
+    @_force_complex_other
     def __sub__(self, other: 'ComplexNumber') -> 'ComplexNumber':
         """
         Subtract one complex number from another.
@@ -49,21 +76,29 @@ class ComplexNumber:
         :param other: The complex number to subtract.
         :return: The result of the subtraction as a new complex number.
         """
-        real_part = self.real - other.real
-        imaginary_part = self.imaginary - other.imaginary
-        return ComplexNumber(real_part, imaginary_part)
+        return self + ComplexNumber(-other.real, -other.imaginary)
 
+    @_force_complex_other
+    def __rsub__(self, other: 'ComplexNumber') -> 'ComplexNumber':
+        return other - self
+
+    def reciprocal(self) -> 'ComplexNumber':
+        """
+        Calculate the reciprocal of the complex number.
+
+        :return: The reciprocal as a new complex number.
+        """
+        new_real = self.real / self.norm
+        new_imaginary = -self.imaginary / self.norm
+        return ComplexNumber(new_real, new_imaginary)
+
+    @_force_complex_other
     def __truediv__(self, other: 'ComplexNumber') -> 'ComplexNumber':
-        """
-        Divide one complex number by another.
+        return self * other.reciprocal()
 
-        :param other: The complex number to divide by.
-        :return: The result of the division as a new complex number.
-        """
-        denominator = (other.real ** 2) + (other.imaginary ** 2)
-        real_part = ((self.real * other.real) + (self.imaginary * other.imaginary)) / denominator
-        imaginary_part = ((self.imaginary * other.real) - (self.real * other.imaginary)) / denominator
-        return ComplexNumber(real_part, imaginary_part)
+    @_force_complex_other
+    def __rtruediv__(self, other: 'ComplexNumber') -> 'ComplexNumber':
+        return other / self
 
     def __abs__(self) -> float:
         """
@@ -71,7 +106,7 @@ class ComplexNumber:
 
         :return: The absolute value as a floating-point number.
         """
-        return math.sqrt((self.real ** 2) + (self.imaginary ** 2))
+        return sqrt(self.norm)
 
     def conjugate(self) -> 'ComplexNumber':
         """
@@ -87,6 +122,7 @@ class ComplexNumber:
 
         :return: The result of exponentiation as a new complex number.
         """
-        real_part = math.exp(self.real) * math.cos(self.imaginary)
-        imaginary_part = math.exp(self.real) * math.sin(self.imaginary)
-        return ComplexNumber(real_part, imaginary_part)
+        a, b = self.real, self.imaginary
+        new_real = exp(a) * cos(b)
+        new_imaginary = exp(a) * sin(b)
+        return ComplexNumber(new_real, new_imaginary)
