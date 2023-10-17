@@ -11,7 +11,9 @@
  * @returns {number} total bird count
  */
 export function totalBirdCount(birdsPerDay) {
-  throw new Error('Please implement the totalBirdCount function');
+  // Use the reduce method to sum up all the bird counts
+  const total = birdsPerDay.reduce((accumulator, currentCount) => accumulator + currentCount, 0);
+  return total;
 }
 
 /**
@@ -22,7 +24,22 @@ export function totalBirdCount(birdsPerDay) {
  * @returns {number} birds counted in the given week
  */
 export function birdsInWeek(birdsPerDay, week) {
-  throw new Error('Please implement the birdsInWeek function');
+  // Ensure week is within a valid range
+  if (week < 1 || week > Math.ceil(birdsPerDay.length / 7)) {
+    return 0; // Invalid week, return 0 birds
+  }
+
+  // Calculate the starting and ending indices for the specified week
+  const startIndex = (week - 1) * 7;
+  const endIndex = startIndex + 7;
+
+  // Use slice to extract the bird counts for the specified week
+  const birdCountsInWeek = birdsPerDay.slice(startIndex, endIndex);
+
+  // Use reduce to calculate the total bird count for the week
+  const totalInWeek = birdCountsInWeek.reduce((accumulator, currentCount) => accumulator + currentCount, 0);
+
+  return totalInWeek;
 }
 
 /**
@@ -33,5 +50,10 @@ export function birdsInWeek(birdsPerDay, week) {
  * @returns {number[]} corrected bird count data
  */
 export function fixBirdCountLog(birdsPerDay) {
-  throw new Error('Please implement the fixBirdCountLog function');
+  // Start from the first day and increment counts for every second day
+  for (let i = 0; i < birdsPerDay.length; i += 2) {
+    birdsPerDay[i]++;
+  }
+
+  return birdsPerDay;
 }
