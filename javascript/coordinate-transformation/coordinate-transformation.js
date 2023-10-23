@@ -15,7 +15,9 @@
  *  translated coordinate pair in the form [x, y]
  */
 export function translate2d(dx, dy) {
-  throw new Error('Implement the translate2d function');
+  return function (x, y) {
+    return [x + dx, y + dy];
+  };
 }
 
 /**
@@ -29,7 +31,9 @@ export function translate2d(dx, dy) {
  *  scaled coordinate pair in the form [x, y]
  */
 export function scale2d(sx, sy) {
-  throw new Error('Implement the scale2d function');
+  return function (x, y) {
+    return [sx * x, sy * y];
+  };
 }
 
 /**
@@ -43,7 +47,10 @@ export function scale2d(sx, sy) {
  *  transformed coordinate pair in the form [x, y]
  */
 export function composeTransform(f, g) {
-  throw new Error('Implement the composeTransform function');
+  return function(x, y) {
+    let [_x, _y] = f(x, y);
+    return g(_x, _y);
+  };
 }
 
 /**
@@ -56,5 +63,15 @@ export function composeTransform(f, g) {
  *  if the arguments are the same on subsequent calls, or compute a new result if they are different.
  */
 export function memoizeTransform(f) {
-  throw new Error('Implement the memoizeTransform function');
+  let _x, _y, r;
+  return function (x, y) {
+    if (x === _x && y === _y) {
+      return r;
+    }
+
+    _x = x;
+    _y = y;
+    r = f(x, y);
+    return r;
+  };
 }
