@@ -1,4 +1,7 @@
 /// <reference path="./global.d.ts" />
+
+import { resolve } from "path";
+
 // @ts-check
 //
 // The lines above enable type checking for this file. Various IDEs interpret
@@ -27,7 +30,12 @@ export class TranslationService {
    * @returns {Promise<string>}
    */
   free(text) {
-    throw new Error('Implement the free function');
+    return new Promise((resolve, reject) =>{
+      this.api
+        .fetch(text)
+        .then(({ translation }) => resolve(translation))
+        .catch(reject);
+    });
   }
 
   /**
@@ -41,7 +49,14 @@ export class TranslationService {
    * @returns {Promise<string[]>}
    */
   batch(texts) {
-    throw new Error('Implement the batch function');
+    return new Promise((resolve, reject) => {
+      if (texts.length === 0) {
+        return reject(new BatchIsEmpty());
+      }
+      Promise.all(texts.map((text) => this.free(text)))
+        .then(resolve)
+        .catch(reject);
+    });
   }
 
   /**
@@ -54,7 +69,24 @@ export class TranslationService {
    * @returns {Promise<void>}
    */
   request(text) {
-    throw new Error('Implement the request function');
+    return new Promise((resolve, reject) => {
+      let count = 0;
+      let error = null;
+      let checkAndRecall = (res) => {
+        count++;
+        if (!res) {
+          return resolve();
+        } else {
+          if (count >= 3) {
+            return reject(error);
+          } else {
+            error = res;
+            this.api.request(text, checkAndRecall);
+          }
+        }
+      };
+      this.api.request(text, checkAndRecall);
+    });
   }
 
   /**
@@ -68,7 +100,24 @@ export class TranslationService {
    * @returns {Promise<string>}
    */
   premium(text, minimumQuality) {
-    throw new Error('Implement the premium function');
+    return new Promise((resolve, reject) => {
+      this.api
+        .fetch(text)
+        .then(({ translation, quality }) => {
+          if (quality >= minimumQuality) {
+            resolve(translation);
+          } else {
+            reject(new QualityThresholdNotMet());
+          }
+        })
+        .catch(() => {
+          this.request(text)
+            .then(() => {
+              this.premium(text, minimumQuality).then(resolve).catch(reject);
+            })
+            .catch(reject);
+        });
+    });
   }
 }
 
