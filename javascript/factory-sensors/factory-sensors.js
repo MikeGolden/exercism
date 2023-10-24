@@ -1,6 +1,10 @@
 // @ts-check
 
-export class ArgumentError extends Error {}
+export class ArgumentError extends Error {
+  constructor() {
+    super('Invalid args!');
+  }
+}
 
 export class OverheatingError extends Error {
   constructor(temperature) {
@@ -16,7 +20,9 @@ export class OverheatingError extends Error {
  * @throws {Error}
  */
 export function checkHumidityLevel(humidityPercentage) {
-  throw new Error('Implement the checkHumidity function');
+  if (humidityPercentage > 70) {
+    throw new Error("Too high!");
+  }
 }
 
 /**
@@ -26,7 +32,11 @@ export function checkHumidityLevel(humidityPercentage) {
  * @throws {ArgumentError|OverheatingError}
  */
 export function reportOverheating(temperature) {
-  throw new Error('Implement the reportOverheating function');
+  if (temperature === null) {
+    throw new ArgumentError();
+  } else if (temperature > 500) {
+    throw new OverheatingError(temperature);
+  }
 }
 
 /**
@@ -41,5 +51,20 @@ export function reportOverheating(temperature) {
  * @throws {ArgumentError|OverheatingError|Error}
  */
 export function monitorTheMachine(actions) {
-  throw new Error('Implement the monitorTheMachine function');
+  let { check, alertDeadSensor, alertOverheating, shutdown } = actions;
+  try {
+    check();
+  } catch (error) {
+    if (error instanceof ArgumentError) {
+      alertDeadSensor();
+    } else if (error instanceof OverheatingError) {
+      if (error.temperature < 600) {
+        alertOverheating();
+      } else {
+        shutdown();
+      }
+    } else {
+      throw error;
+    }
+  }
 }
