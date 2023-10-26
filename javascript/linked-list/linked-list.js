@@ -3,28 +3,91 @@
 // convenience to get you started writing code faster.
 //
 
+class Node {
+  constructor(value) {
+    this.value = value;
+    this.next = null;
+  }
+}
+
 export class LinkedList {
-  push() {
-    throw new Error('Remove this statement and implement this function');
+  constructor() {
+    this.head = null;
+  }
+
+  push(value) {
+    const newNode = new Node(value);
+    if (!this.head) {
+      this.head = newNode;
+    } else {
+      let current = this.head;
+      while (current.next) {
+        current = current.next;
+      }
+      current.next = newNode;
+    }
   }
 
   pop() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.head) {
+      return undefined;
+    }
+    if (!this.head.next) {
+      const value = this.head.value;
+      this.head = null;
+      return value;
+    }
+    let current = this.head;
+    let previous = null;
+    while (current.next) {
+      previous = current;
+      current = current.next;
+    }
+    previous.next = null;
+    return current.value;
   }
 
   shift() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.head) {
+      return undefined;
+    }
+    const value = this.head.value;
+    this.head = this.head.next;
+    return value;
   }
 
-  unshift() {
-    throw new Error('Remove this statement and implement this function');
+  unshift(value) {
+    const newNode = new Node(value);
+    newNode.next = this.head;
+    this.head = newNode;
   }
 
-  delete() {
-    throw new Error('Remove this statement and implement this function');
+  delete(value) {
+    if (!this.head) {
+      return;
+    }
+    if (this.head.value === value) {
+      this.head = this.head.next;
+      return;
+    }
+    let current = this.head;
+    let previous = null;
+    while (current && current.value !== value) {
+      previous = current;
+      current = current.next;
+    }
+    if (current) {
+      previous.next = current.next;
+    }
   }
 
   count() {
-    throw new Error('Remove this statement and implement this function');
+    let count = 0;
+    let current = this.head;
+    while (current) {
+      count++;
+      current = current.next;
+    }
+    return count;
   }
 }
