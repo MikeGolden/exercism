@@ -4,43 +4,59 @@
 //
 
 export class ComplexNumber {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(real, imag) {
+    this._real = real;
+    this._imag = imag;
   }
 
   get real() {
-    throw new Error('Remove this statement and implement this function');
+    return this._real;
   }
 
   get imag() {
-    throw new Error('Remove this statement and implement this function');
+    return this._imag;
   }
 
-  add() {
-    throw new Error('Remove this statement and implement this function');
+  add(num) {
+    const real = this._real + num.real;
+    const imag = this._imag + num.imag;
+
+    return new ComplexNumber(real, imag);
   }
 
-  sub() {
-    throw new Error('Remove this statement and implement this function');
+  sub(num) {
+    const real = this._real - num.real;
+    const imag = this._imag - num.imag;
+
+    return ComplexNumber(real, imag);
   }
 
-  div() {
-    throw new Error('Remove this statement and implement this function');
+  div(num) {
+    return new ComplexNumber(
+      (this._real * num.real + this._imag * num.imag) / num.abs ** 2,
+      (this._imag * num.real - this._real * num.imag) / num.abs ** 2
+    );
   }
 
-  mul() {
-    throw new Error('Remove this statement and implement this function');
+  mul(num) {
+    const real = this._real * num.real - this._imag * num.imag;
+    const imag = this._imag * num.real + this._real * num.imag;
+
+    return new ComplexNumber(real, imag);
   }
 
   get abs() {
-    throw new Error('Remove this statement and implement this function');
+    return (this._real ** 2 + this._imag ** 2) ** 0.5;
   }
 
   get conj() {
-    throw new Error('Remove this statement and implement this function');
+    return new ComplexNumber(this._real, 0 - this._imag);
   }
 
   get exp() {
-    throw new Error('Remove this statement and implement this function');
+    return new ComplexNumber(
+      Math.E ** this._real * Math.cos(this._imag),
+      Math.E ** this._real * Math.sin(this._imag)
+    );
   }
 }
