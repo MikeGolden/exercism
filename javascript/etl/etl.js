@@ -3,6 +3,14 @@
 // convenience to get you started writing code faster.
 //
 
-export const transform = () => {
-  throw new Error('Remove this statement and implement this function');
+export const transform = (old) => {
+  let newObject = {};
+  
+  for (let key in old) {
+    old[key].forEach((letter) => {
+      newObject[letter.toLowerCase()] = Number(key);
+    });
+  }
+
+  return newObject;
 };
