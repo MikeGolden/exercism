@@ -4,15 +4,32 @@
 //
 
 export class Allergies {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(score) {
+    this.score = score;
+    this.allergies = {
+      1: "eggs",
+      2: "peanuts",
+      4: "shellfish",
+      8: "strawberries",
+      16: "tomatoes",
+      32: "chocolate",
+      64: "pollen",
+      128: "cats",
+    };
   }
 
   list() {
-    throw new Error('Remove this statement and implement this function');
+    const allergies = [];
+
+    for (let i = 1; i <= 128; i *= 2) {
+      if (this.score & i) {
+        allergies.push(this.allergies[i]);
+      }
+    }
+    return allergies;
   }
 
-  allergicTo() {
-    throw new Error('Remove this statement and implement this function');
+  allergicTo(allergy) {
+    return this.list().includes(allergy);
   }
 }
