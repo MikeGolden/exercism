@@ -4,27 +4,32 @@
 //
 
 export class Triangle {
-  constructor(side1, side2, side3) {
-    this.sides = [side1, side2, side3].sort((a, b) => a - b);
-    this.validateTriangle();
+  constructor(...sides) {
+    this.sides = sides;
   }
 
-  validateTriangle() {
-    if (this.sides[0] <= 0 || this.sides[0] + this.sides[1] <= this.sides[2]) {
-      throw new Error('Invalid triangle: The sum of the lengths of any two sides must be greater than the length of the third side.');
-    }
+  get isTriangle(){
+    return this.sides
+      .sort((a,b) => a-b)
+      .every((side) => side > 0) && (this.sides[2] <= this.sides[0] + this.sides[1]);
+  }
+
+  get matchingSides(){
+    return this.sides
+      .sort((a,b) => a-b)
+      .filter((side) => this.sides.filter(n => n === side).length >= 2)
+      .length
   }
 
   get isEquilateral() {
-    return this.sides[0] === this.sides[2];
-  }
+    return this.isTriangle && this.matchingSides === 3;
+    }
 
   get isIsosceles() {
-    return this.sides[0] === this.sides[1] || this.sides[1] === this.sides[2];
+    return this.isTriangle && this.matchingSides === 2 || this.isTriangle && this.matchingSides === 3;
   }
 
   get isScalene() {
-    return this.sides[0] !== this.sides[1] && this.sides[1] !== this.sides[2];
+    return this.isTriangle && this.matchingSides === 0;
   }
 }
-
