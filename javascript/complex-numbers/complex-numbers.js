@@ -1,62 +1,43 @@
-//
-// This is only a SKELETON file for the 'Complex Numbers' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class ComplexNumber {
-  constructor(real, imag) {
-    this._real = real;
-    this._imag = imag;
-  }
-
-  get real() {
-    return this._real;
-  }
-
-  get imag() {
-    return this._imag;
-  }
-
-  add(num) {
-    const real = this._real + num.real;
-    const imag = this._imag + num.imag;
-
-    return new ComplexNumber(real, imag);
-  }
-
-  sub(num) {
-    const real = this._real - num.real;
-    const imag = this._imag - num.imag;
-
-    return ComplexNumber(real, imag);
-  }
-
-  div(num) {
-    return new ComplexNumber(
-      (this._real * num.real + this._imag * num.imag) / num.abs ** 2,
-      (this._imag * num.real - this._real * num.imag) / num.abs ** 2
-    );
-  }
-
-  mul(num) {
-    const real = this._real * num.real - this._imag * num.imag;
-    const imag = this._imag * num.real + this._real * num.imag;
-
-    return new ComplexNumber(real, imag);
+  constructor(real, imag = 0) {
+    this.real = real;
+    this.imag = imag;
   }
 
   get abs() {
-    return (this._real ** 2 + this._imag ** 2) ** 0.5;
-  }
-
-  get conj() {
-    return new ComplexNumber(this._real, 0 - this._imag);
+    const { real, imag } = this;
+    return Math.sqrt(real * real + imag * imag);
   }
 
   get exp() {
+    const { real, imag } = this
+    const { E, cos, sin } = Math
+    return new ComplexNumber(E ** real).mul(new ComplexNumber(cos(imag), sin(imag)));
+  }
+
+  get conj() {
+    return new ComplexNumber(this.real, this.imag === 0 ? 0 : -this.imag);
+  }
+
+  add(b) {
+    const { real, imag } = this;
+    return new ComplexNumber(real + b.real, imag + b.imag);
+  }
+
+  sub(b) {
+    const { real, imag } = this;
+    return new ComplexNumber(real - b.real, imag - b.imag);
+  }
+
+  mul(b) {
+    const { real, imag } = this;
+    return new ComplexNumber(real * b.real - imag * b.imag, imag * b.real + real * b.imag);
+  }
+
+  div(b) {
+    const { real, imag } = this;
     return new ComplexNumber(
-      Math.E ** this._real * Math.cos(this._imag),
-      Math.E ** this._real * Math.sin(this._imag)
-    );
+      (real * b.real + imag * b.imag) / (b.real ** 2 + b.imag ** 2),
+      (imag * b.real - real * b.imag) / (b.real ** 2 + b.imag ** 2))
   }
 }
