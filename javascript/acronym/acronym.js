@@ -1,8 +1,11 @@
-//
-// This is only a SKELETON file for the 'Acronym' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const parse = (phrase) => {
+  const words = phrase.split(/[\s_-]+/);
+  let acronym = "";
 
-export const parse = () => {
-  throw new Error('Remove this statement and implement this function');
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    acronym += word[0].toUpperCase();
+  }
+
+  return acronym;
 };
