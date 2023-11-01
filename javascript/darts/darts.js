@@ -1,8 +1,9 @@
-//
-// This is only a SKELETON file for the 'Darts' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const score = (x, y) => {
+  const distance = Math.sqrt(x * x + y * y);
 
-export const score = () => {
-  throw new Error('Remove this statement and implement this function');
+  if (distance > 10) return 0;
+  if (distance > 5) return 1;
+  if (distance > 1) return 5;
+
+  return 10;
 };
