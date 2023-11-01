@@ -1,8 +1,15 @@
-//
-// This is only a SKELETON file for the 'Secret Handshake' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const commands = (input) => {
+  const actions = ['wink', 'double blink', 'close your eyes', 'jump'];
+  const binary = input.toString(2).padStart(5, '0');
+  const sequence = binary.split('').reverse().map((digit, index) => {
+    if (digit === '1') {
+      return actions[index];
+    }
+  }).filter(Boolean);
 
-export const commands = () => {
-  throw new Error('Remove this statement and implement this function');
+  if (binary[0] === '1') {
+    return sequence.reverse();
+  }
+
+  return sequence;
 };
