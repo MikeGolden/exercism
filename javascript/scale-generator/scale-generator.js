@@ -1,35 +1,39 @@
+const SHARP_SCALE = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
+const FLAT_SCALE = ["A", "Bb", "B", "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab"];
+const USES_FLAT = ["F", "Bb", "Eb", "Ab", "Db", "Gb", "d", "g", "c", "f", "bb", "eb"];
+const INTERVAL_MAPPINGS = {
+  "m": 1,
+  "M": 2,
+  "A": 3
+};
+
 export class Scale {
   constructor(tonic) {
-    // Convert the tonic to uppercase 
-    this.tonic = tonic.toUpperCase();
-
-    // Generate the chromatic scale 
-    this.chromaticScale = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+    this.tonic = tonic;
+    this.scale = USES_FLAT.includes(tonic) ? FLAT_SCALE : SHARP_SCALE;
+    tonic = tonic[0].toUpperCase() + (tonic.length == 1 ? "" : tonic[1]);
+    this.indexOfTonic = this.scale.indexOf(tonic);
   }
 
   chromatic() {
-    // Return the chromatic scale
-    return this.chromaticScale;
+    return Array(12).fill().map((note, index) => {
+      const newNoteIndex = setWithinRange(this.indexOfTonic + index, this.scale.length);
+      return this.scale[newNoteIndex];
+    });
   }
 
   interval(intervals) {
-    // Determine the index of the tonic in the chromatic scale
-    let index = this.chromaticScale.indexOf(this.tonic);
-
-    // Generate the scale
-    const scale = intervals.split('').map(interval => {
-      switch (interval) {
-        case 'M':
-          index += 2;
-          break;
-        case 'm':
-          index += 1;
-          break;
-      }
-      // Return the note at the new index
-      return this.chromaticScale[index % 12];
+    const result = [this.scale[this.indexOfTonic]];
+    intervals.split("").forEach(interval => {
+      const step = INTERVAL_MAPPINGS[interval];
+      const lastNoteIndex = this.scale.indexOf(result[result.length - 1]);
+      const newNoteIndex = setWithinRange(lastNoteIndex + step, this.scale.length);
+      result.push(this.scale[newNoteIndex]);
     });
-
-    return scale;
+    return result;
   }
+}
+
+function setWithinRange(number, max) {
+  return (number % max + max) % max;
 }
