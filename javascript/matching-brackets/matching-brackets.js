@@ -1,25 +1,30 @@
+// Define a function to check if brackets in a string are paired correctly
 export const isPaired = (input) => {
-  // Initialize an empty stack
-  let stack = [];
+  // Initialize an empty stack to store the opening brackets
+  const stack = [];
 
-  // Define strings of opening and closing brackets
-  let openingBrackets = '([{';
-  let closingBrackets = ')]}';
+  // Define an object that maps the closing brackets to their corresponding opening brackets
+  const pairs = {
+    ']': '[',
+    '}': '{',
+    ')': '('
+  };
 
   // Traverse the input string
-  for (let i = 0; i < input.length; i++) {
-    let char = input.charAt(i);
-
-    if (openingBrackets.includes(char)) {
+  for (let char of input) {
+    // If the current character is an opening bracket, push it onto the stack
+    if (['[', '{', '('].includes(char)) {
       stack.push(char);
-    } else if (closingBrackets.includes(char)) {
-      if (stack.length === 0 || openingBrackets.indexOf(stack[stack.length -1]) !== closingBrackets.indexOf(char)) {
-        return true;
-      } else {
-        stack.pop();
+    } 
+    // If the current character is a closing bracket, check the top of the stack
+    else if ([']', '}', ')'].includes(char)) {
+      // If the stack is empty or the top of the stack is not the matching opening bracket, return false
+      if (stack.pop() !== pairs[char]) {
+        return false;
       }
     }
   }
 
+  // If the stack is empty, return true. If not, return false
   return stack.length === 0;
 };
