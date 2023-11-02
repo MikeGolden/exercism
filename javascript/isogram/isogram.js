@@ -3,14 +3,10 @@ export const isIsogram = (word) => {
   word = word.toLowerCase();
 
   // Remove any spaces of hyphens from the word
-  word = word.replace(/[\s-]/g, '');
+  word = word.split(/[\s-]/g).join('');
 
-  // Check if the word contains any repeating characters
-  for (let i = 0; i < word.length; i++) {
-    if (word.indexOf(word[i]) !== word.lastIndexOf(word[i])) {
-      return false;
-    }
-  }
-
-  return true;
+  // Use the filter method to remove any repeating characters from the word
+  const filteredWord = word.split('').filter((char, index, self) => self.indexOf(char) === index);
+  
+  return filteredWord.length === word.length;
 };
