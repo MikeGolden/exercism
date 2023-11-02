@@ -1,7 +1,7 @@
 export const compute = (dna1, dna2) => {
   // Check if the two DNA strands are equal length
   if (dna1.length !== dna2.length) {
-    throw new Error("DNA strands must be of equal length.");
+    throw new Error("strands must be of equal length");
   }
 
   // Initialize a counter for the Hamming Distance
