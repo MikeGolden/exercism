@@ -1,28 +1,17 @@
-export const valid = (number) => {
-  number = number.replace(/\D/g, '');
-  
-  if (number.length <= 1) {
+//
+// This is only a SKELETON file for the 'Luhn' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
+
+export const valid = (str) => {
+  str = str.replace(/ /g, "");
+  if(str.length < 2){
     return false;
   }
 
-  let sum = 0;
-  let doubleUp = false;
-
-  for (let i = number.length - 1; i >= 0; i--) {
-    let curDigit = parseInt(number.charAt(i));
-
-    if (doubleUp) {
-      curDigit *= 2;
-
-      if (curDigit > 9) {
-        curDigit -= 9;
-      }
-    }
-  
-    sum += curDigit;
-
-    doubleUp = !doubleUp;
+  let digits = [...str].map(c => parseInt(c));
+  for(let i = digits.length - 2; i >= 0; i -= 2){
+   digits[i] = (digits[i] * 2 > 9) ? digits[i] * 2 - 9 : digits[i] * 2;
   }
-
-  return sum % 10 === 0;
+  return digits.reduce((sum, digit) => sum + digit) % 10 === 0;
 };
