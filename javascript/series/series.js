@@ -1,14 +1,20 @@
 export class Series {
-  constructor(series) {
-    this.series = series;
-  }
-
-  slices(sliceLength) {
-    const slices = [];
-    for (let i = 0; i <= this.series.length - sliceLength; i++) {
-      slices.push(this.series.substring(i, i + sliceLength));
+    constructor (numStr) {
+        this.digits = [...numStr].map (digit => Number(digit))
+        if (this.digits.length === 0) 
+            throw new Error('series cannot be empty')
     }
-
-    return slices;
-  }
+    slices (size) {
+        if (size < 0)
+            throw new Error ('slice length cannot be negative')
+        if (size === 0) 
+            throw new Error ('slice length cannot be zero')
+        if (size > this.digits.length)
+            throw new Error (
+                'slice length cannot be greater than series length'
+            )
+        return this.digits
+                   .slice(0, this.digits.length - size + 1)
+                   .map ((d, i) => (this.digits.slice(i, i + size)))
+    }
 }
