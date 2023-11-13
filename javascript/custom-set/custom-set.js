@@ -1,46 +1,48 @@
-//
-// This is only a SKELETON file for the 'Custom Set' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class CustomSet {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(elements = []) {
+    this.set = [...new Set(elements)];
   }
 
   empty() {
-    throw new Error('Remove this statement and implement this function');
+    return this.set.length === 0;
   }
 
-  contains() {
-    throw new Error('Remove this statement and implement this function');
+  contains(element) {
+    return this.set.includes(element);
   }
 
-  add() {
-    throw new Error('Remove this statement and implement this function');
+  add(element) {
+    if (!this.contains(element)) {
+      this.set.push(element);
+    }
+    return this;
   }
 
-  subset() {
-    throw new Error('Remove this statement and implement this function');
+  subset(otherSet) {
+    return this.set.every((element) => otherSet.contains(element));
   }
 
-  disjoint() {
-    throw new Error('Remove this statement and implement this function');
+  disjoint(otherSet) {
+    return this.set.every((element) => !otherSet.contains(element));
   }
 
-  eql() {
-    throw new Error('Remove this statement and implement this function');
+  eql(otherSet) {
+    return this.subset(otherSet) && otherSet.subset(this);
   }
 
-  union() {
-    throw new Error('Remove this statement and implement this function');
+  union(otherSet) {
+    return new CustomSet([...this.set, ...otherSet.set]);
   }
 
-  intersection() {
-    throw new Error('Remove this statement and implement this function');
+  intersection(otherSet) {
+    return new CustomSet(
+      this.set.filter((element) => otherSet.contains(element)),
+    );
   }
 
-  difference() {
-    throw new Error('Remove this statement and implement this function');
+  difference(otherSet) {
+    return new CustomSet(
+      this.set.filter((element) => !otherSet.contains(element)),
+    );
   }
 }
