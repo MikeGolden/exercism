@@ -1,22 +1,25 @@
-export const transpose = (textstring) => {
-  // Split the text into lines
-  const lines = textstring.split("\n");
+//
+// This is only a SKELETON file for the 'Transpose' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
 
-  // Find the length of the longest line
-  const maxLength = lines.reduce((max, line) => Math.max(max, line.length), 0);
+export const transpose = (arr) => {
+  let matrix = [];
 
-  // Pad all lines with spaces to make them the same length
-  lines.forEach((line, i) => (lines[i] = line.padEnd(maxLength, " ")));
+  for(let i = 0; i < arr.length; i++){
+    for(let j = 0; j < arr[i].length; j++){
+      let rowLength = 0;
+      let elem = arr[i][j];
 
-  // Transpose the text by swapping characters in each column
-  let transposedText = "";
-  for (let i = 0; i < maxLength; i++) {
-    for (let line of lines) {
-      transposedText += line[i];
+      if (matrix[j]){
+        rowLength = matrix[j].length;
+      }
+
+      if (i > rowLength){
+        elem = elem.padStart(i - rowLength + 1, " ");
+      }
+      matrix[j] ? matrix[j] += elem : matrix[j] = elem;
     }
-    transposedText += "\n";
   }
-
-  // Format the transposed text as a string and return it
-  return transposedText.trim();
+  return matrix;
 };
