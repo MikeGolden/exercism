@@ -1,8 +1,12 @@
-//
-// This is only a SKELETON file for the 'Rotational Cipher' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const rotate = (text, key) => {
+  // Convert the text to uppercase
+  const upperText = text.toLowerCase();
 
-export const rotate = () => {
-  throw new Error('Remove this statement and implement this function');
+  // Replace each letter in the text with a letter that is shifted by the key in the alphabet
+  const result = upperText.replace(/[A-Z]/g, (c) =>
+    String.fromCharCode(((c.charCodeAt(0) - 65 + key) % 26) + 65),
+  );
+
+  // Return the result
+  return result;
 };
