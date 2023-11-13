@@ -1,15 +1,19 @@
 export class Element {
-  constructor(value, next = null) {
-    this.value = value;
-    this.next = next;
+  constructor(value) {
+    this._value = value;
+    this._next = null;
   }
 
   get value() {
-    return this.value;
+    return this._value;
   }
 
   get next() {
-    return this.next;
+    return this._next;
+  }
+
+  set next(nextElement) {
+    this._next = nextElement;
   }
 }
 
