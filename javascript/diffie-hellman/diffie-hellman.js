@@ -1,18 +1,30 @@
-//
-// This is only a SKELETON file for the 'Diffie Hellman' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class DiffieHellman {
   constructor(p, g) {
-    throw new Error('Remove this statement and implement this function');
+    if (p < 2 || g < 2 || p <= g) {
+      throw new Error("Invalid arguments");
+    }
+    if (!this.isPrime(p) || !this.isPrime(g)) {
+      throw new Error("Invalid arguments");
+    }
+    this.p = p;
+    this.g = g;
   }
 
   getPublicKey(privateKey) {
-    throw new Error('Remove this statement and implement this function');
+    if (privateKey < 2 || privateKey >= this.p) {
+      throw new Error("Invalid private key");
+    }
+    return this.g ** privateKey % this.p;
   }
 
   getSecret(theirPublicKey, myPrivateKey) {
-    throw new Error('Remove this statement and implement this function');
+    return theirPublicKey ** myPrivateKey % this.p;
+  }
+
+  isPrime(num) {
+    for (let i = 2; i < num; i++) {
+      if (num % i === 0) return false;
+    }
+    return num > 1;
   }
 }
