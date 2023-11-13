@@ -1,52 +1,46 @@
-export const tournamentTally = (matches) => {
-  // Create an object to store the team statistics
+export const tournamentTally = (input) => {
+  const header = ["Team                           | MP |  W |  D |  L |  P"];
+
+  if (input.length === 0) return String(header);
+
+  let results = [];
   const stats = {};
+  
+  input = input.split("\n").map((x) => x.split(";"));
 
-  // Traverse the array of matches
-  matches.forEach((match) => {
-    // Update the team statistics
-    const [team1, team2, result] = match.split(";");
-    const points = result === "win" ? 3 : result === "draw" ? 1 : 0;
-    ["team1", "team2"].forEach((team) => {
-      if (!stats[team]) {
-        stats[team] = {
-          team: team,
-          played: 0,
-          won: 0,
-          drawn: 0,
-          lost: 0,
-          points: 0,
-        };
-      }
-      stats[team].played++;
-      stats[team].points += points;
-      stats[team].won += result === "win" ? 1 : 0;
-      stats[team].drawn += result === "draw" ? 1 : 0;
-      stats[team].lost += result === "loss" ? 1 : 0;
-    });
-  });
+  for (const game of input) {
+    if (!stats.hasOwnProperty(game[0])) stats[game[0]] = [0, 0, 0, 0, 0]
+    if (!stats.hasOwnProperty(game[1])) stats[game[1]] = [0, 0, 0, 0, 0]
 
-  // Sort the teams by points in descending order and alphabetically
-  const sortedStats = Object.values(stats).sort((a, b) => {
-    if (a.points === b.points) {
-      return a.team.localeCompare(b.team);
+    stats[game[0]][0]++;
+    stats[game[1]][0]++;
+
+    switch (game[2]) {
+      case "win":
+        stats[game[0]][1]++;
+        stats[game[0]][4] += 3;
+        stats[game[1]][3]++;
+        break;
+      case "draw":
+        stats[game[0]][2]++;
+        stats[game[0]][4]++;
+        stats[game[1]][2]++;
+        stats[game[1]][4]++;
+        break;
+      case "loss":
+        stats[game[0]][3]++;
+        stats[game[1]][1]++;
+        stats[game[1]][4] += 3;
+        break;
     }
-    return b.points - a.points;
-  });
+  }
 
-  // Format result as a string
-  const result = sortedStats
-    .map(
-      (stat) =>
-        `${stat.team.padEnd(32)} | ${stat.played
-          .toString()
-          .padEnd(3)} | ${stat.won.toString().padEnd(3)} | ${stat.drawn
-          .toString()
-          .padEnd(3)} | ${stat.lost.toString().padEnd(3)} | ${stat.points
-          .toString()
-          .padEnd(3)}`,
-    )
-    .join("\n");
+  for (const [team, scores] of Object.entries(stats)) {
+    results.push((`${team.padEnd(30, " ")} ` + 
+                scores.reduce((acc, curr) => acc + `|${String(curr).padStart(3, " ")} `, "")
+                ).slice(0, -1));
+  }
 
-  return result;
+  
+  return header.concat(results.sort().sort((a, b) => b.match(/\d+$/) - a.match(/\d+$/))).join("\n");
 };
