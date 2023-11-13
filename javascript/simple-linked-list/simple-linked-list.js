@@ -1,44 +1,58 @@
-//
-// This is only a SKELETON file for the 'Simple Linked List' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Element {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(value, next = null) {
+    this.value = value;
+    this.next = next;
   }
 
   get value() {
-    throw new Error('Remove this statement and implement this function');
+    return this.value;
   }
 
   get next() {
-    throw new Error('Remove this statement and implement this function');
+    return this.next;
   }
 }
 
 export class List {
   constructor() {
-    throw new Error('Remove this statement and implement this function');
+    this.head = null;
+    this.length = 0;
   }
 
   add(nextValue) {
-    throw new Error('Remove this statement and implement this function');
+    const newElement = new Element(nextValue, this.head);
+    this.head = newElement;
+    this.length++;
   }
 
   get length() {
-    throw new Error('Remove this statement and implement this function');
+    return this.length;
   }
 
   get head() {
-    throw new Error('Remove this statement and implement this function');
+    return this.head;
   }
 
   toArray() {
-    throw new Error('Remove this statement and implement this function');
+    let elements = [];
+    let current = this.head;
+    while (current) {
+      elements.push(current.value);
+      current = current.next;
+    }
+    return elements;
   }
 
   reverse() {
-    throw new Error('Remove this statement and implement this function');
+    let previous = null;
+    let current = this.head;
+    let next = null;
+    while (current) {
+      next = current.next;
+      current.next = previous;
+      previous = current;
+      current = next;
+    }
+    this.head = previous;
   }
 }
