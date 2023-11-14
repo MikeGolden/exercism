@@ -1,8 +1,19 @@
-//
-// This is only a SKELETON file for the 'ISBN Verifier' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const isValid = (isbn) => {
+  const isbnArray = isbn.replace(/-/g, "").split("");
 
-export const isValid = () => {
-  throw new Error('Remove this statement and implement this function');
+  if (isbnArray.length !== 10) {
+    return false;
+  }
+
+  if (isbnArray[9] === "X") {
+    isbnArray[9] = "10";
+  }
+
+  const numbers = isbnArray.map((char) => parseInt(char, 10));
+  if (numbers.includes(NaN)) {
+    return false;
+  }
+
+  const sum = numbers.reduce((acc, num, index) => acc + num * (10 - index), 0);
+  return sum % 11 === 0;
 };
