@@ -1,0 +1,4 @@
+/Users/cookiemonster/Exercism/cpp/hello-world/CMakeFiles/hello-world.dir
+/Users/cookiemonster/Exercism/cpp/hello-world/CMakeFiles/test_hello-world.dir
+/Users/cookiemonster/Exercism/cpp/hello-world/CMakeFiles/edit_cache.dir
+/Users/cookiemonster/Exercism/cpp/hello-world/CMakeFiles/rebuild_cache.dir
