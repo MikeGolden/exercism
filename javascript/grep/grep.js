@@ -1,89 +1,43 @@
 #!/usr/bin/env node
 
-// The above line is a shebang. On Unix-like operating systems, or environments,
-// this will allow the script to be run by node, and thus turn this JavaScript
-// file into an executable. In other words, to execute this file, you may run
-// the following from your terminal:
-//
-// ./grep.js args
-//
-// If you don't have a Unix-like operating system or environment, for example
-// Windows without WSL, you can use the following inside a window terminal,
-// such as cmd.exe:
-//
-// node grep.js args
-//
-// Read more about shebangs here: https://en.wikipedia.org/wiki/Shebang_(Unix)
+const fs = require('fs');
+const path = require('path');
 
-const fs = require("fs");
-const path = require("path");
-
-/**
- * Reads the given file and returns lines.
- *
- * This function works regardless of POSIX (LF) or windows (CRLF) encoding.
- *
- * @param {string} file path to file
- * @returns {string[]} the lines
- */
 function readLines(file) {
-  const data = fs.readFileSync(path.resolve(file), { encoding: "utf-8" });
+  const data = fs.readFileSync(path.resolve(file), { encoding: 'utf-8' });
   return data.split(/\r?\n/);
 }
 
 const VALID_OPTIONS = [
-  "n", // add line numbers
-  "l", // print file names where pattern is found
-  "i", // ignore case
-  "v", // reverse files results
-  "x", // match entire line
+  'n', // add line numbers
+  'l', // print file names where pattern is found
+  'i', // ignore case
+  'v', // reverse files results
+  'x', // match entire line
 ];
 
-const ARGS = process.argv;
+const ARGS = process.argv.slice(2);
 
-//
-// This is only a SKELETON file for the 'Grep' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-// This file should *not* export a function. Use ARGS to determine what to grep
-// and use console.log(output) to write to the standard output.
+const options = ARGS.filter(arg => arg.startsWith('-') && VALID_OPTIONS.includes(arg.slice(1)))
+  .reduce((opts, arg) => { opts[arg.slice(1)] = true; return opts; }, {}),
+  files = ARGS.filter(arg => !arg.startsWith('-'));
+const pattern = files.shift(),
+  comparison = 
+    options.x
+    ? options.i
+      ? (line) => line.toLowerCase() === pattern.toLowerCase()
+      : (line) => line === pattern
+    : options.i
+      ? (line) => line.toLowerCase().includes(pattern.toLowerCase())
+      : (line) => line.includes(pattern);
 
-function grep(pattern, flags, files) {
-  const result = [];
-
-  for (const file of files) {
-    const lines = readLines(file);
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-
-      let isMatch = false;
-      if (flags.includes("x")) {
-        isMatch = line === pattern;
-      } else {
-        const regex = new RegExp(pattern, flags.includes("i") ? "i" : "");
-        isMatch = regex.test(line);
-      }
-
-      if (isMatch && flags.includes("v")) {
-        continue;
-      }
-
-      if (flags.includes("n")) {
-        result.push(`${i + 1}:${line}`);
-      } else {
-        result.push(line);
-      }
-    }
-  }
-
-  return result.join("\n");
-}
-
-const [, , pattern, ...otherArgs] = ARGS;
-const flags = otherArgs.filter(
-  (arg) => arg.startsWith("-") && VALID_OPTIONS.includes(arg.slice(1)),
-);
-const files = otherArgs.filter((arg) => !arg.startsWith("-"));
-
-console.log(grep(pattern, flags, files));
+files.forEach((file) => {
+  const found = readLines(file).reduce((matches, line, no) => {
+    comparison(line) === !options.v && matches.push([no + 1, line]);
+    return matches;
+  }, []);
+  !options.l
+  ? found.forEach(([no, line]) => console.log(`${files.length > 1 ? file + ':' : ''}${
+    options.n ? no + ':' : ''}${line}`))
+  : found.length && console.log(file);
+});
