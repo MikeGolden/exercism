@@ -1,8 +1,16 @@
-//
-// This is only a SKELETON file for the 'Flatten Array' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const flatten = (nestedList) => {
+  let result = [];
 
-export const flatten = () => {
-  throw new Error('Remove this statement and implement this function');
+  const processList = (list) => {
+    list.forEach((item) => {
+      if (Array.isArray(item)) {
+        processList(item);
+      } else if (item !== null && item !== undefined) {
+        result.push(item);
+      }
+    });
+  };
+
+  processList(nestedList);
+  return result;
 };
