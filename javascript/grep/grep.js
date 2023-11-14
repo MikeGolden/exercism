@@ -15,8 +15,8 @@
 //
 // Read more about shebangs here: https://en.wikipedia.org/wiki/Shebang_(Unix)
 
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 /**
  * Reads the given file and returns lines.
@@ -27,16 +27,16 @@ const path = require('path');
  * @returns {string[]} the lines
  */
 function readLines(file) {
-  const data = fs.readFileSync(path.resolve(file), { encoding: 'utf-8' });
+  const data = fs.readFileSync(path.resolve(file), { encoding: "utf-8" });
   return data.split(/\r?\n/);
 }
 
 const VALID_OPTIONS = [
-  'n', // add line numbers
-  'l', // print file names where pattern is found
-  'i', // ignore case
-  'v', // reverse files results
-  'x', // match entire line
+  "n", // add line numbers
+  "l", // print file names where pattern is found
+  "i", // ignore case
+  "v", // reverse files results
+  "x", // match entire line
 ];
 
 const ARGS = process.argv;
@@ -47,3 +47,43 @@ const ARGS = process.argv;
 //
 // This file should *not* export a function. Use ARGS to determine what to grep
 // and use console.log(output) to write to the standard output.
+
+function grep(pattern, flags, files) {
+  const result = [];
+
+  for (const file of files) {
+    const lines = readLines(file);
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      let isMatch = false;
+      if (flags.includes("x")) {
+        isMatch = line === pattern;
+      } else {
+        const regex = new RegExp(pattern, flags.includes("i") ? "i" : "");
+        isMatch = regex.test(line);
+      }
+
+      if (isMatch && flags.includes("v")) {
+        continue;
+      }
+
+      if (flags.includes("n")) {
+        result.push(`${i + 1}:${line}`);
+      } else {
+        result.push(line);
+      }
+    }
+  }
+
+  return result.join("\n");
+}
+
+const [, , pattern, ...otherArgs] = ARGS;
+const flags = otherArgs.filter(
+  (arg) => arg.startsWith("-") && VALID_OPTIONS.includes(arg.slice(1)),
+);
+const files = otherArgs.filter((arg) => !arg.startsWith("-"));
+
+console.log(grep(pattern, flags, files));
