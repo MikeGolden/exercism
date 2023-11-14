@@ -1,35 +1,26 @@
-export const translate = (english) => {
-  const words = english.split(" ");
-  const vowels = ["a", "e", "i", "o", "u"];
+const vowels = ['a', 'e', 'i', 'o', 'u', 'yt', 'xr'];
+const combos = ['ch', 'qu', 'th', 'thr', 'sch', 'rh']
 
-  const isVowel = (char) => vowels.includes(char.toLowerCase());
-  const isConsonantCluster = (word) => {
-    for (let i = 0; i < word.length; i++) {
-      if (isVowel(word[i])) {
-        return i > 0;
-      }
-    }
-    return false;
-  };
-
-  const translateWord = (word) => {
-    if (isVowel(word[0]) || word.startsWith("xr") || word.startsWith("yt")) {
-      return word + "ay";
-    } else if (isConsonantCluster(word) || word.startsWith("qu")) {
-      let consonantCluster = "";
-      let i = 0;
-      while (
-        i < word.length &&
-        (isConsonantCluster(word.substring(i)) || word.startsWith("qu", i))
-      ) {
-        consonantCluster += word[i];
-        i++;
-      }
-      return word.substring(i) + consonantCluster + "ay";
-    } else {
-      return word.substring(1) + word[0] + "ay";
-    }
-  };
-
-  return words.map(translateWord).join(" ");
+export const translate = (sentence) => {
+  return sentence.split(' ').map(translateWord).join(' ')
 };
+
+const shiftHead = (word, n) => {
+  return word.slice(n) + word.substring(0, n)
+}
+
+function translateWord(word) {
+  let headSize = 1;
+  
+  vowels.forEach(vowel => { 
+    if (word.startsWith(vowel)) headSize = 0;
+  })
+  
+  combos.forEach(combo => {
+    if (word.startsWith(combo)) 
+      headSize = combo.length;
+  })
+  
+  if (headSize === 1 && word.match(/^\wqu/) != null) headSize = 3;
+  return shiftHead(word, headSize) + "ay";
+}
