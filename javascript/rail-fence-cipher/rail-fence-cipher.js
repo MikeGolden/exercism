@@ -1,66 +1,58 @@
-export const encode = (text, rails) => {
-  if (rails <= 1) {
-    return text;
+function indexOfRails(index, railsCount) {
+  const cycle = railsCount * 2 - 2;
+  const cycleLeft = index % cycle;
+  if (cycleLeft >= railsCount) {
+    return cycle - cycleLeft;
   }
+  return cycleLeft;
+}
 
-  const fence = Array.from({ length: rails }, () =>
-    Array(text.length).fill("."),
-  );
-  let row = 0;
-  let direction = 1;
+export const encode = (input, rails) => {
+  let fence = new Array(rails)
+    .fill("")
+    .map(() => new Array(input.length).fill("."));
 
-  for (let i = 0; i < text.length; i++) {
-    fence[row][i] = text[i];
-    row += direction;
+  input.split("").forEach((char, index) => {
+    const indexOfCycle = indexOfRails(index, rails);
+    fence[indexOfCycle][index] = char;
+  });
 
-    if (row === 0 || row === rails - 1) {
-      direction *= -1;
-    }
-  }
-
-  return fence.map((row) => row.join("")).join("");
+  return fence
+    .flat()
+    .filter((el) => el !== ".")
+    .join("");
 };
 
-export const decode = (text, rails) => {
-  if (rails <= 1) {
-    return text;
-  }
+export const decode = (input, rails) => {
+  let inputArr = input.split("");
+  const cycle = rails * 2 - 2;
 
-  const fence = Array.from({ length: rails }, () =>
-    Array(text.length).fill("."),
-  );
-  let row = 0;
-  let direction = 1;
+  let fence = new Array(rails)
+    .fill("")
+    .map(() => new Array(input.length).fill("."));
 
-  for (let i = 0; i < text.length; i++) {
-    fence[row][i] = "X";
-    row += direction;
+  inputArr.forEach((char, index) => {
+    const indexOfCycle = indexOfRails(index, rails);
+    fence[indexOfCycle][index] = "?";
+  });
 
-    if (row === 0 || row === rails - 1) {
-      direction *= -1;
-    }
-  }
-
-  let index = 0;
-  for (let i = 0; i < rails; i++) {
-    for (let j = 0; j < text.length; j++) {
-      if (fence[i][j] === "X") {
-        fence[i][j] = text[index++];
+  for (let i = 0; i < fence.length; i++) {
+    for (let j = 0; j < fence[i].length; j++) {
+      if (fence[i][j] === "?") {
+        fence[i][j] = inputArr[0];
+        inputArr.shift();
       }
     }
   }
 
-  row = 0;
-  direction = 1;
-  let result = "";
-
-  for (let i = 0; i < text.length; i++) {
-    result += fence[row][i];
-    row += direction;
-    if (row === 0 || row === rails - 1) {
-      direction *= -1;
+  let result = new Array(inputArr.length);
+  for (let i = 0; i < fence.length; i++) {
+    for (let j = 0; j < fence[i].length; j++) {
+      if (fence[i][j] !== ".") {
+        result[j] = fence[i][j];
+      }
     }
   }
 
-  return result;
+  return result.join("");
 };
