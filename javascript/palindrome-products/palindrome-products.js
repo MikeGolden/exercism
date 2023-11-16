@@ -1,10 +1,35 @@
-//
-// This is only a SKELETON file for the 'Palindrome Products' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Palindromes {
-  static generate() {
-    throw new Error('Remove this statement and implement this function');
+  static isPalindrome(num) {
+    const str = num.toString();
+    return str === str.split("").reverse().join("");
+  }
+
+  static generate(min, max) {
+    let smallest = Infinity;
+    let largest = -Infinity;
+    const products = {};
+
+    for (let i = min; i <= max; i++) {
+      for (let j = i; j <= max; j++) {
+        const product = i * j;
+        if (this.isPalindrome(product)) {
+          if (product < smallest) {
+            smallest = product;
+            product[smallest] = [[i, j]];
+          } else if (product === smallest) {
+            products[smallest].push([i, j]);
+          }
+
+          if (product > largest) {
+            largest = product;
+            products[largest] = [[i, j]];
+          } else if (product === largest) {
+            products[largest].push([i, j]);
+          }
+        }
+      }
+    }
+
+    return { smallest, largest, factorPairs: products };
   }
 }
