@@ -1,8 +1,17 @@
-//
-// This is only a SKELETON file for the 'Word Count' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const countWords = (subtitle) => {
+  const cleanedSubtitle = subtitle.replace(/[^\w\s']g/, " ").toLowerCase();
 
-export const countWords = () => {
-  throw new Error('Remove this statement and implement this function');
+  const words = cleanedSubtitle.split(/\s+/);
+
+  const wordCount = new Map();
+
+  words.forEach((word) => {
+    if (wordCount.has(word)) {
+      wordCount.set(word, wordCount.get(word) + 1);
+    } else {
+      wordCount.set(word, 1);
+    }
+  });
+
+  return wordCount;
 };
