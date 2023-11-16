@@ -1,48 +1,15 @@
-export const recite = () => {
-  const gifts = [
-    "a partridge in a pear tree",
-    "two turtle doves",
-    "three French hens",
-    "four calling birds",
-    "five golden rings",
-    "six geese a-laying",
-    "seven swans a-swimming",
-    "eight maids a-milking",
-    "nine ladies dancing",
-    "ten lords a-leaping",
-    "eleven pipers piping",
-    "twelve drummers drumming",
-  ];
+const days = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'];
 
-  const days = [
-    "first",
-    "second",
-    "third",
-    "fourth",
-    "fifth",
-    "sixth",
-    "seventh",
-    "eighth",
-    "ninth",
-    "tenth",
-    "eleventh",
-    "twelfth",
-  ];
+const items = ['twelve Drummers Drumming,', 'eleven Pipers Piping,', 'ten Lords-a-Leaping,', 'nine Ladies Dancing,', 'eight Maids-a-Milking,', 'seven Swans-a-Swimming,', 'six Geese-a-Laying,', 'five Gold Rings,', 'four Calling Birds,', 'three French Hens,', 'two Turtle Doves, and', 'a Partridge in a Pear Tree.'];
 
-  let lyrics = "";
-  for (let i = 0; i < 12; i++) {
-    lyrics += `On the ${days[i]} day of Christmas, my true love gave to me\n`;
-    for (let j = i; j >= 0; j--) {
-      if (j === 0 && i !== 0) {
-        lyrics += `And ${gifts[j]}\n`;
-      } else {
-        lyrics += `${gifts[j]}\n`;
-      }
-    }
-    if (i !== 11) {
-      lyrics += "\n";
-    }
+export const recite = (start, end = start) => {
+  let verses = [];
+  for (let number = start; number <= end; number++) {
+    verses.push(verse(number));
   }
-
-  return lyrics;
+  return verses.join('\n');
 };
+
+function verse(number) {
+  return 'On the ' + days[number - 1] + ' day of Christmas my true love gave to me: ' + items.slice(12 - number).join(' ') + '\n';
+}
