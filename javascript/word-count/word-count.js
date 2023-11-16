@@ -1,17 +1,9 @@
-export const countWords = (subtitle) => {
-  const cleanedSubtitle = subtitle.replace(/[^\w\s']g/, " ").toLowerCase();
+//
+// This is only a SKELETON file for the 'Word Count' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
 
-  const words = cleanedSubtitle.split(/\s+/);
-
-  const wordCount = new Map();
-
-  words.forEach((word) => {
-    if (wordCount.has(word)) {
-      wordCount.set(word, wordCount.get(word) + 1);
-    } else {
-      wordCount.set(word, 1);
-    }
-  });
-
-  return wordCount;
-};
+export const countWords = phrase => phrase
+  .toLowerCase()
+  .match(/\w+('\w+)?/g)
+  .reduce((counts, word) => ({ ...counts, [word]: ~~counts[word] + 1 }), {});
