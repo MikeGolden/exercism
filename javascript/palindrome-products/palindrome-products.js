@@ -1,23 +1,29 @@
-//
-// This is only a SKELETON file for the 'Palindrome Products' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
-
+// Function to check if a number is a palindrome
 const isPalindrome = n => String(n) === String(n).split('').reverse().join('');
-const EMPTY_RESULT = {value: null, factors: []}
+
+// Constant representing an empty result
+const EMPTY_RESULT = { value: null, factors: [] };
+
+// Palindromes class with static method generate
 export class Palindromes {
   static generate(options) {
     return new Palindromes(options);
   }
-  constructor({minFactor, maxFactor}) {
+
+  // Constructor to initialize min and max factors
+  constructor({ minFactor, maxFactor }) {
+    // Set min factor to 1 if not provided
     this.min = minFactor ?? 1;
     this.max = maxFactor;
   }
+
+  // Method to check if min factor is greater than max factor
   checkLimits() {
     if (this.min > this.max)
       throw new Error('min must be <= max');
   }
+
+  // Method to find the smallest palindrome and its factors within the range
   get smallest() {
     this.checkLimits();
     const limit = this.max ** 2;
@@ -27,6 +33,8 @@ export class Palindromes {
     }
     return EMPTY_RESULT;
   }
+
+  // Method to find the largest palindrome and its factors within the range
   get largest() {
     this.checkLimits();
     const limit = this.min ** 2;
@@ -36,14 +44,18 @@ export class Palindromes {
     }
     return EMPTY_RESULT;
   }
+
+  // Method to check if a number is a palindrome product
   isPalindromeProduct(n) {
     if (isPalindrome(n)) {
       const fs = this.factors(n);
       if (fs.length > 0)
-        return {value: n, factors: fs};
+        return { value: n, factors: fs };
     }
     return;
   }
+
+  // Method to find factors of a number within the specified range
   factors(n) {
     const pairs = [];
     const limit = Math.min(this.max, Math.sqrt(n));
