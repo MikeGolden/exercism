@@ -1,19 +1,11 @@
-export const rows = (letter) => {
-  if (letter === "A") {
-    return "A\n";
+export const rows = (text) => {
+  const limit = text.charCodeAt(0) - 65
+  let spaces = ' '.repeat(limit)
+  const result = [spaces + 'A' + spaces]
+  for (let i = 1; i <= limit; i++) {
+    spaces = ' '.repeat(limit - i)
+    const char = String.fromCharCode(i + 65)
+    result.push(spaces + char + ' '.repeat(2 * i - 1) + char + spaces)
   }
-
-  const distance = letter.charCodeAt(0) - "A".charCodeAt(0);
-  const width = distance * 2 + 1;
-  let result = "";
-
-  for (let i = 0; i < width; i++) {
-    const currentChar = String.fromCharCode(
-      "A".charCodeAt(0) + Math.abs(distance - i),
-    );
-    const spaces = " ".repeat(Math.abs(distance - i));
-    result += spaces + currentChar + spaces + "\n";
-  }
-
-  return result;
-};
+  return result.concat(result.slice(0, -1).reverse())
+}
