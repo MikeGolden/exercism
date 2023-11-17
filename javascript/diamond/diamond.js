@@ -1,8 +1,19 @@
-//
-// This is only a SKELETON file for the 'Diamond' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const rows = (letter) => {
+  if (letter === "A") {
+    return "A\n";
+  }
 
-export const rows = () => {
-  throw new Error('Remove this statement and implement this function');
+  const distance = letter.charCodeAt(0) - "A".charCodeAt(0);
+  const width = distance * 2 + 1;
+  let result = "";
+
+  for (let i = 0; i < width; i++) {
+    const currentChar = String.fromCharCode(
+      "A".charCodeAt(0) + Math.abs(distance - i),
+    );
+    const spaces = " ".repeat(Math.abs(distance - i));
+    result += spaces + currentChar + spaces + "\n";
+  }
+
+  return result;
 };
