@@ -1,112 +1,58 @@
+//
+// This is only a SKELETON file for the 'Rest API' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
+
 export class RestAPI {
-  constructor(database = {}) {
-    this.database = database;
+  constructor(db) {
+    this.db = db
   }
 
   get(url) {
-    const [endpoint, queryParams] = url.split("?");
-    const queryObj = this.parseQueryParams(queryParams);
-
-    switch (endpoint) {
-      case "/users":
-        return this.getUsers(queryObj.users);
-      default:
-        return { error: "Endpoint not found" };
+    switch (url) {
+      case '/users': return this.db
+      default: 
+        let { groups: { name } } = /(=)(?<name>\w+)/.exec(url)
+        let matching = this.db.users.filter((x) => x.name === name)
+        return {users: matching}
+        
     }
   }
 
   post(url, payload) {
-    const [endpoint] = url.split("/");
-
-    switch (endpoint) {
-      case "add":
-        return this.createUser(payload.user);
-      case "iou":
-        return this.createIOU(payload.lender, payload.borrower, payload.amount);
-      default:
-        return { error: "Endpoint not found" };
+    switch (url) {
+      case '/add': 
+        let user = {name: payload.user, owes: {}, owed_by: {}, balance: 0,}
+        this.db.users.push(user)
+        return user
+      case '/iou':
+        for (const user of this.db.users) {
+          if (user.name === payload.lender) {
+            var lender = user
+          } else if (user.name === payload.borrower) {
+            var borrower = user
+          } else {
+            this.db.users.splice(this.db.users.indexOf(user), 1)
+          }
+        }
+        if (lender.owes[borrower.name] > payload.amount) {
+          borrower.owed_by[lender.name] = (borrower.owed_by[lender.name] || 0) - payload.amount
+          lender.owes[borrower.name] = (lender.owes[borrower.name] || 0) - payload.amount
+        } else  { 
+          lender.owed_by[borrower.name] = payload.amount - (lender.owes[borrower.name] || 0)
+          delete lender.owes[borrower.name]
+          borrower.owes[lender.name] = payload.amount - (borrower.owed_by[lender.name] || 0)
+          delete borrower.owed_by[lender.name]
+        }
+        if (lender.owed_by[borrower.name] === 0 ) {
+          delete lender.owed_by[borrower.name]
+        }
+        if ( borrower.owes[lender.name] === 0) {
+          delete borrower.owes[lender.name]
+        }
+        lender.balance += payload.amount
+        borrower.balance -= payload.amount
+        return this.db
     }
-  }
-
-  parseQueryParams(queryParams) {
-    if (!queryParams) return {};
-    const params = new URLSearchParams(queryParams);
-    const result = {};
-    for (const [key, value] of params) {
-      result[key] = value.split(",");
-    }
-    return result;
-  }
-
-  getUsers(users) {
-    const userList = Object.keys(this.database).sort();
-    const filteredUsers = userList.filter(
-      (user) => !user || user.includes(user),
-    );
-    const userObjects = filteredUsers.map((user) => this.getUserObject(user));
-    return { users: userObjects };
-  }
-
-  createUser(userName) {
-    if (this.database[userName]) {
-      return { error: "User already exists" };
-    }
-    this.database[userName] = {
-      name: userName,
-      owes: {},
-      owed_by: {},
-      balance: 0.0,
-    };
-    return this.getUserObject(userName);
-  }
-
-  createIOU(lender, borrower, amount) {
-    if (!this.database[lender] || !this.database[borrower]) {
-      return { error: "Invalid lender or borrower" };
-    }
-
-    amount = parseFloat(amount);
-    if (isNaN(amount) || amount <= 0) {
-      return { error: "Invalid amount" };
-    }
-
-    this.database[lender].owes[borrower] =
-      (this.database[lender].owes[borrower] || 0) + amount;
-    this.database[borrower].owed_by[lender] =
-      (this.database[borrower].owed_by[lender] || 0) + amount;
-    this.updateBalances(lender);
-    this.updateBalances(borrower);
-
-    return {
-      users: [this.getUserObject(lender), this.getUserObject(borrower)],
-    };
-  }
-
-  getUserObject(userName) {
-    const user = this.database[userName];
-    const balance = this.calculateBalance(userName);
-    return {
-      name: user.name,
-      owes: user.owes,
-      owed_by: user.owed_by,
-      balance: balance,
-    };
-  }
-
-  calculateBalance(userName) {
-    const user = this.database[userName];
-    const owesTotal = Object.values(user.owes).reduce(
-      (total, amount) => total + amount,
-      0,
-    );
-    const owedByTotal = Object.values(user.owed_by).reduce(
-      (total, amount) => total + amount,
-      0,
-    );
-    return owedByTotal - owesTotall;
-  }
-
-  updateBalances(userName) {
-    this.database[userName].balance = this.calculateBalance(userName);
   }
 }
