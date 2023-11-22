@@ -1,29 +1,27 @@
+//
+// This is only a SKELETON file for the 'Pythagorean Triplet' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
 export function triplets({ minFactor, maxFactor, sum }) {
-  const tripletsArr = [];
-
-  for (let a = minFactor; a < sum / 3; a++) {
-    for (let b = a + 1; b < sum / 2; b++) {
-      const c = sum - a - b;
-      if (
-        a * a + b * b === c * c &&
-        (!maxFactor || (a <= maxFactor && b <= maxFactor && c <= maxFactor))
-      ) {
-        tripletsArr.push(new Triplet(a, b, c));
+  let out = [];
+  for (let a = minFactor||1;a<(maxFactor||sum);a++) {
+    for (let b = a;b<(maxFactor||sum);b++) {
+      let c = Math.sqrt(a**2 + b**2);
+      if (a+b+c==sum && (maxFactor ? c < maxFactor: true) && (minFactor ? c > minFactor : true)) {
+        out.push(new Triplet(a, b, c))
       }
     }
   }
-
-  return tripletsArr;
+  console.log(out)
+  return out
 }
-
 class Triplet {
   constructor(a, b, c) {
     this.a = a;
     this.b = b;
     this.c = c;
   }
-
   toArray() {
-    return [this.a, this.b, this.c];
+    return [this.a, this.b, this.c]
   }
 }
