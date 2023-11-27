@@ -1,58 +1,86 @@
-// Helper function to calculate the greatest common divisor (gcd)
-const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+//
+// This is only a SKELETON file for the 'Rational Numbers' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
 
 export class Rational {
-  constructor(numerator, denominator) {
-    const divisor = gcd(Math.abs(numerator), Math.abs(denominator));
-    this.numerator = numerator / divisor;
-    this.denominator = denominator / divisor;
-
-    // Ensure that the denominator is positive
-    if (this.denominator < 0) {
-      this.numerator *= -1;
-      this.denominator *= -1;
-    }
+  constructor(a, b) {
+    this.a = a;
+    this.b = b;
   }
 
-  add(other) {
-    const newNumerator =
-      this.numerator * other.denominator + other.numerator * this.denominator;
-    const newDenominator = this.denominator * other.denominator;
-    return new Rational(newNumerator, newDenominator);
+  add(r) {
+    const a = this.a * r.b + r.a * this.b;
+    const b = this.b * r.b;
+
+    return new Rational(a, b).reduce();
   }
 
-  sub(other) {
-    const newNumerator =
-      this.numerator * other.denominator - other.numerator * this.denominator;
-    const newDenominator = this.denominator * other.denominator;
-    return new Rational(newNumerator, newDenominator);
+  sub(r) {
+    const a = this.a * r.b - r.a * this.b;
+    const b = this.b * r.b;
+
+    return new Rational(a, b).reduce();
   }
 
-  mul(other) {
-    const newNumerator = this.numerator * other.numerator;
-    const newDenominator = this.denominator * other.denominator;
-    return new Rational(newNumerator, newDenominator);
+  mul(r) {
+    const a = this.a * r.a;
+    const b = this.b * r.b;
+
+    return new Rational(a, b).reduce();
   }
 
-  div(other) {
-    const newNumerator = this.numerator * other.denominator;
-    const newDenominator = this.denominator * other.numerator;
-    return new Rational(newNumerator, newDenominator);
+  div(r) {
+    const a = this.a * r.b;
+    const b = r.a * this.b;
+
+    return new Rational(a, b).reduce();
   }
 
   abs() {
-    return new Rational(Math.abs(this.numerator), Math.abs(this.denominator));
+    return new Rational(Math.abs(this.a), Math.abs(this.b));
   }
 
-  exprational(power) {
-    return new Rational(this.numerator ** power, this.denominator ** power);
+  exprational(n) {
+    const a = this.a ** (n >= 0 ? n : Math.abs(n));
+    const b = this.b ** (n >= 0 ? n : Math.abs(n));
+
+    return new Rational(a, b).reduce();
   }
 
-  expreal(exponent) {
-    return Math.pow(Math.pow(this.numerator, exponent), 1 / this.denominator);
+  expreal(x) {
+    return Math.round(Math.pow(x ** this.a, 1 / this.b) * 100) / 100;
   }
 
   reduce() {
-    return this;
+    const gcd = findGCD(this.a, this.b);
+
+    let a = this.a / gcd;
+    let b = this.b / gcd;
+
+    if (a < 0 && b < 0) {
+      a = Math.abs(a);
+      b = Math.abs(b);
+    }
+
+    if (a > 0 && b < 0) {
+      a *= -1;
+      b = Math.abs(b);
+    }
+    
+    return new Rational(a, b);
   }
 }
+
+export const findGCD = (a, b) => {
+  a = Math.abs(a);
+  b = Math.abs(b);
+  
+  while(b) {
+    let t = b;
+    b = a % b;
+    a = t;
+  }
+  
+  return a;
+};
