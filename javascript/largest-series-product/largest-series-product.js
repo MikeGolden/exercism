@@ -1,23 +1,20 @@
-export const largestProduct = (input, span) => {
-  if (span < 0 || !/^\d+$/.test(input) || span > input.length) {
-    throw new Error("Invalid input or span");
+//
+// This is only a SKELETON file for the 'Largest Series Product' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
+
+export const largestProduct = (seq,dig) => {
+  if(dig>seq.length) throw new Error('Span must be smaller than string length');
+  if(/\D/.test(seq)) throw new Error('Digits input must only contain digits');
+    if(dig<=0) throw new Error('Span must be greater than zero');
+     
+  const numbers = []
+  for (let i = 0; i <= (seq.length-dig); i++) {
+    numbers.push(seq.slice(i,i+dig))
   }
-
-  if (span === 0) {
-    return 1;
-  }
-
-  let maxProduct = 0;
-
-  for (let i = 0; i <= input.length - span; i++) {
-    let product = 1;
-    for (let j = i; j < i + span; j++) {
-      product *= Number(input[j]);
-    }
-    if (product > maxProduct) {
-      maxProduct = product;
-    }
-  }
-
-  return maxProduct;
+  const products = numbers.map(num=>
+    num.split("").reduce((total,d)=>{
+    return total*parseInt(d)},1)
+  )
+  return Math.max(...products)
 };
