@@ -1,14 +1,36 @@
-//
-// This is only a SKELETON file for the 'Sublist' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class List {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(elements) {
+    this.elements = elements || [];
   }
 
-  compare() {
-    throw new Error('Remove this statement and implement this function');
+  compare(otherList) {
+    const A = this.elements;
+    const B = otherList.elements;
+
+    if (JSON.stringify(A) === JSON.stringify(B)) {
+      return "EQUAL";
+    }
+
+    if (A.length > B.length && this.containsSublist(A, B)) {
+      return "SUPERLIST";
+    }
+
+    if (A.length < B.length && otherList.containsSublist(B, A)) {
+      return "SUBLIST";
+    }
+
+    return "UNEQUAL";
+  }
+
+  containsSublist(largerList, smallerList) {
+    for (let i = 0; i <= largerList.length - smallerList.length; i++) {
+      if (
+        largerList.slice(i, i + smallerList.length).join() ===
+        smallerList.join()
+      ) {
+        return true;
+      }
+    }
+    return false;
   }
 }
