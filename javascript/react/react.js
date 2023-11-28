@@ -1,52 +1,75 @@
-export class InputCell {
-  constructor(value) {
-    this.value = value;
-    this.callbacks = new Set();
+class Cell {
+  #fn = () => null;
+  #value = this.#fn();
+  #dependency;
+  #dependents = [];
+
+  get value() {
+    return this.setValue(this.#fn);
   }
 
   setValue(value) {
-    if (this.value !== value) {
-      this.value = value;
-      this.callbacks.forEach((cb) => cb());
-    }
+    const newFn = typeof value === "function" ? value : () => value;
+    const newValue = newFn();
+    const valueChanges = this.#value !== newValue;
+
+    this.#value = newValue;
+    this.#fn = newFn;
+
+    if (valueChanges) this.#dependents.forEach((cell) => cell.value);
+
+    return this.#value;
   }
-}
 
-export class ComputeCell {
-  constructor(inputCells, fn) {
-    this.fn = fn;
-    this.inputCells = inputCells;
-    this.value = this.computeValue();
-    this.callbacks = new Set();
+  get dependency() {
+    return this.#dependency;
+  }
 
-    this.inputCells.forEach((cell) => {
-      cell.addCallback(() => this.recompute());
-    });
+  setDependency(cell) {
+    this.#dependency = cell;
+    return this;
   }
 
   addCallback(cb) {
-    this.callbacks.add(cb);
+    this.#dependents.push(cb.setDependency(this));
   }
 
   removeCallback(cb) {
-    this.callbacks.delete(cb);
-  }
-
-  computeValue() {
-    return this.fn(...this.inputCells.map((cell) => cell.value));
-  }
-
-  recompute() {
-    const newValue = this.computeValue();
-    if (this.value !== newValue) {
-      this.value = newValue;
-      this.callbacks.forEach((cb) => cb());
-    }
+    const cbIndex =
+      this.#dependents.findIndex((dependent) => dependent === cb) + 1 ||
+      this.#dependents.length + 1;
+    this.#dependents = this.#dependents
+      .slice(0, cbIndex - 1)
+      .concat(this.#dependents.slice(cbIndex));
   }
 }
 
-export class CallbackCell {
+export class InputCell extends Cell {
+  constructor(value) {
+    super();
+    this.setValue(value);
+  }
+}
+
+export class ComputeCell extends Cell {
+  constructor(inputCells, fn) {
+    super();
+    inputCells.forEach((cell) => cell.addCallback(this));
+    this.setValue(() => fn(inputCells));
+  }
+}
+
+export class CallbackCell extends Cell {
+  #values = [];
+
   constructor(fn) {
-    this.fn = fn;
+    super();
+    this.setValue(
+      () => this.dependency && this.#values.push(fn(this.dependency))
+    );
+  }
+
+  get values() {
+    return this.#values;
   }
 }
