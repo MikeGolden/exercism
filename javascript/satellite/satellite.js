@@ -1,46 +1,33 @@
-class TreeNode {
-  constructor(value) {
-    this.value = value;
-    this.left = null;
-    this.right = null;
-  }
-}
-
 export const treeFromTraversals = (preorder, inorder) => {
-  if (!preorder.length || !inorder.length) {
+  if (preorder.length === 0) {
     return {}; // Empty tree
   }
 
-  const buildTree = (preStart, preEnd, inStart, inEnd) => {
-    if (preStart > preEnd || inStart > inEnd) {
-      return null; // No more nodes to process
-    }
+  if (preorder.length !== inorder.length) {
+    throw new Error("traversals must have the same length");
+  }
 
-    const rootValue = preorder[preStart]; // Get the root value from pre-order traversal
-    const root = new TreeNode(rootValue); // Create a node with the root value
+  const set = new Set(preorder);
+  if (set.size !== preorder.length) {
+    throw new Error("traversals must contain unique items");
+  }
 
-    let inIndex = inorder.indexOf(rootValue);
+  const rootValue = preorder[0];
+  const rootIndex = inorder.indexOf(rootValue);
 
-    // Calculate the number of nodes in the left subtree
-    const leftSubtreeNodes = inIndex - inStart;
+  if (rootIndex === -1) {
+    throw new Error("traversals must have the same elements");
+  }
 
-    // Recursively build left and right subtrees
-    root.left = buildTree(
-      preStart + 1,
-      preStart + leftSubtreeNodes,
-      inStart,
-      inIndex - 1,
-    );
-    root.right = buildTree(
-      preStart + leftSubtreeNodes + 1,
-      preEnd,
-      inIndex + 1,
-      inEnd,
-    );
+  const leftPreorder = preorder.slice(1, rootIndex + 1);
+  const leftInorder = inorder.slice(0, rootIndex);
+  const rightPreorder = preorder.slice(rootIndex + 1);
+  const rightInorder = inorder.slice(rootIndex + 1);
 
-    return root; // Return the constructed tree
+  return {
+    value: rootValue,
+    left: treeFromTraversals(leftPreorder, leftInorder),
+    right: treeFromTraversals(rightPreorder, rightInorder),
   };
-
-  // call the recursive build function
-  return buildTree(0, preorder.length - 1, 0, inorder.length - 1);
 };
+
