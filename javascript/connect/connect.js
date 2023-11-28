@@ -1,66 +1,43 @@
 export class Board {
-  constructor(board) {
-    this.board = board;
+  constructor(inputBoard) {
+    this.board = inputBoard.map(row => row.split(""));
   }
 
   winner() {
-    const rows = this.board.length;
-    const cols = this.board[0].length;
-
-    // Player 0 tries to connect top and bottom
-    for (let col = 0; col < cols; col++) {
-      if (this.board[0][col] === "0" && this.dfs(0, col, "0", new Set())) {
-        return "Player 0";
+    for (const [y, row] of this.board.entries())
+      for (const [x, cell] of row.entries()) {
+        if (cell === "O" && this.isAtEdges(this.expand(cell, x, y), ["top", "bottom"]))
+          return "O";
+        if (cell === "X" && this.isAtEdges(this.expand(cell, x, y), ["left", "right"]))
+          return "X";
       }
-    }
-
-    // Player X tries to connect left and right
-    for (let row = 0; row < rows; row++) {
-      if (this.board[row][0] === "X" && this.dfs(row, 0, "X", new Set())) {
-        return "Player X";
-      }
-    }
-
     return "";
   }
 
-  dfs(row, col, player, visited) {
-    const directions = [
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
+  isAtEdges(cells, edges) {
+    return edges.every(edge => {
+      for (const [x, y] of cells)
+        if (
+          edge === "top" && y === 0 ||
+          edge === "bottom" && y === this.board.length - 1 ||
+          edge === "left" && x === 0 + y ||
+          edge === "right" && x === this.board[0].length - 1 + y
+        ) return true;
+      return false;
+    });
+  }
+
+  expand(symbol, x, y, cells = []) {
+    if (!this.board[y] || !this.board[y][x] || 
+        this.board[y][x] !== symbol || cells.includes(`${x},${y}`)
+    ) return;
+    cells.push(`${x},${y}`);
+    const neighbours = [
+      [x-1, y-1], [x+1, y-1], [x-1, y+1],
+      [x+1, y+1], [x-2, y+0], [x+2, y+0],
     ];
-
-    if (player === "0" && row === this.board.length - 1) {
-      return true;
-    }
-
-    if (player === "X" && col === this.board[0].length - 1) {
-      return true;
-    }
-
-    visited.add(`${row},${col}`);
-
-    for (const [dr, dc] of directions) {
-      const newRow = row + dr;
-      const newCol = col + dc;
-
-      if (
-        newRow >= 0 &&
-        newRow < this.board.length &&
-        newCol >= 0 &&
-        newCol < this.board[0].length &&
-        this.board[newRow][newCol] === player &&
-        !visited.has(`${newRow},${newCol}`) &&
-        this.dfs(newRow, newCol, player, visited)
-      ) {
-        return true;
-      }
-    }
-
-    return false;
+    for (const [nx, ny] of neighbours)
+      this.expand(symbol, nx, ny, cells);
+    return cells.map(cell => cell.split(",").map(Number));
   }
 }
