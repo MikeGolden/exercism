@@ -1,45 +1,59 @@
 export const abilityModifier = (constitution) => {
-  return Math.floor((constitution - 10) / 2); // Calculate and return the ability modifier for constitution
+  const modifier = Math.floor((constitution - 10) / 2);
+  if (constitution < 3) {
+    throw new Error("Ability scores must be at least 3");
+  } else if (constitution > 18) {
+    throw new Error("Ability scores can be at most 18");
+  }
+  return modifier;
 };
 
 export class Character {
-  static rollAbility() {
-    const rolls = Array.from(
-      { length: 4 },
-      () => Math.floor(Math.random() * 6) + 1,
-    ); // Generate 4 random dice rolls
-    rolls.sort((a, b) => b - a); // Sort the rolls in descending order
-    return rolls.slice(0, 3).reduce((acc, curr) => acc + curr, 0); // Return the sum of the three highest rolls
+  constructor() {
+    this._strength = Character.rollAbility();
+    this._dexterity = Character.rollAbility();
+    this._constitution = Character.rollAbility();
+    this._intelligence = Character.rollAbility();
+    this._wisdom = Character.rollAbility();
+    this._charisma = Character.rollAbility();
   }
 
-  // Getters for each ability using rollAbility() method
+  static rollAbility() {
+    let rolls = [];
+    for (let i = 0; i < 4; i++) {
+      rolls.push(Math.ceil(Math.random() * 6));
+    }
+    rolls.sort().unshift();
+    let result = rolls.reduce((sum, item) => (sum += item), 0);
+    return result < 3 || result > 18 ? Character.rollAbility() : result;
+  }
+
   get strength() {
-    return Character.rollAbility();
+    return this._strength;
   }
 
   get dexterity() {
-    return Character.rollAbility();
+    return this._dexterity;
   }
 
   get constitution() {
-    return Character.rollAbility();
+    return this._constitution;
   }
 
   get intelligence() {
-    return Character.rollAbility();
+    return this._intelligence;
   }
 
   get wisdom() {
-    return Character.rollAbility();
+    return this._wisdom;
   }
 
   get charisma() {
-    return Character.rollAbility();
+    return this._charisma;
   }
 
-  // Getter for hitpoints based on constitution modifier
   get hitpoints() {
-    const conModifier = abilityModifier(this.constitution); // Get constitution modifier
-    return 10 + conModifier;
+    return 10 + abilityModifier(this.constitution);
   }
 }
+
