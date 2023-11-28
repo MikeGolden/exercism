@@ -1,34 +1,52 @@
-//
-// This is only a SKELETON file for the 'React' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class InputCell {
   constructor(value) {
-    throw new Error('Remove this statement and implement this function');
+    this.value = value;
+    this.callbacks = new Set();
   }
 
   setValue(value) {
-    throw new Error('Remove this statement and implement this function');
+    if (this.value !== value) {
+      this.value = value;
+      this.callbacks.forEach((cb) => cb());
+    }
   }
 }
 
 export class ComputeCell {
   constructor(inputCells, fn) {
-    throw new Error('Remove this statement and implement this function');
+    this.fn = fn;
+    this.inputCells = inputCells;
+    this.value = this.computeValue();
+    this.callbacks = new Set();
+
+    this.inputCells.forEach((cell) => {
+      cell.addCallback(() => this.recompute());
+    });
   }
 
   addCallback(cb) {
-    throw new Error('Remove this statement and implement this function');
+    this.callbacks.add(cb);
   }
 
   removeCallback(cb) {
-    throw new Error('Remove this statement and implement this function');
+    this.callbacks.delete(cb);
+  }
+
+  computeValue() {
+    return this.fn(...this.inputCells.map((cell) => cell.value));
+  }
+
+  recompute() {
+    const newValue = this.computeValue();
+    if (this.value !== newValue) {
+      this.value = newValue;
+      this.callbacks.forEach((cb) => cb());
+    }
   }
 }
 
 export class CallbackCell {
   constructor(fn) {
-    throw new Error('Remove this statement and implement this function');
+    this.fn = fn;
   }
 }
