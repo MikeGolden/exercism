@@ -1,31 +1,27 @@
-export const encode = (input) => {
-  let encoded = "";
-  let count = 1;
-
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] === input[i + 1]) {
-      count++;
-    } else {
-      encoded += count > 1 ? `${count}${input[i]}` : `${input[i]}`;
-      count = 1;
-    }
-  }
-
-  return encoded;
+export const encode = (plain) => {
+  return [...plain, "0"].reduce(
+    ([code, prev_ch, count], ch) => {
+      return ch === prev_ch
+        ? [code, prev_ch, ++count]
+        : [count > 1 ? code + `${count}${prev_ch}` : code + prev_ch, ch, 1];
+    },
+    ["", "", 0],
+  )[0];
 };
 
-export const decode = (input) => {
-  let decoded = "";
-  let count = "";
-
-  for (let i = 0; i < input.length; i++) {
-    if (isNaN(input[i])) {
-      decoded += input[i].repeat(count || 1);
-      count = "";
-    } else {
-      count += input[i];
-    }
-  }
-
-  return decoded;
+export const decode = (code) => {
+  return [...code].reduce(
+    ([code, digits], ch) => {
+      if (/\d/.test(ch)) {
+        return [code, digits + ch];
+      } else {
+        return [
+          digits.length ? code + ch.repeat(Number(digits)) : code + ch,
+          "",
+        ];
+      }
+    },
+    ["", ""],
+  )[0];
 };
+
