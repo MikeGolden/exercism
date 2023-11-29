@@ -1,33 +1,17 @@
-function isPrime(number) {
-  if (number <= 1) return false;
-  if (number <= 3) return true;
+const { floor, sqrt } = Math;
 
-  if (number % 2 === 0 || number % 3 === 0) return false;
+const isPrime = (n) =>
+  n > 1 &&
+  [...Array(floor(sqrt(n)) + 1).keys()].slice(2).every((factor) => n % factor);
 
-  let i = 5;
-  while (i * i <= number) {
-    if (number % i === 0 || number % (i + 2) === 0) {
-      return false;
-    }
-    i += 6;
-  }
-  return true;
-}
-
-export const prime = (n) => {
-  if (n === 1) return 2;
-
-  let count = 1;
-  let number = 3;
-
-  while (count < n) {
-    if (isPrime(number)) {
-      count++;
-    }
-    if (count === n) {
-      return number;
-    }
-    number += 2;
-  }
-  return -1;
+export const prime = (target) => {
+  if (target <= 0) throw new Error("there is no zeroth prime");
+  let num = 2;
+  for (
+    let count = 1;
+    count !== target;
+    num += num === 2 ? 1 : 2, isPrime(num) && count++
+  ) {}
+  return num;
 };
+
