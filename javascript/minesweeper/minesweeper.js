@@ -1,83 +1,34 @@
 export const annotate = (input) => {
-  if (!isValid(input)) {
-    return `[${input}] is invalid`;
-  }
+  const result = [];
 
-  const board = {
-    input: input,
-    width: input[0].length,
-    height: input.length,
-  };
+  for (let i = 0; i < input.length; i++) {
+    result[i] = "";
 
-  let result = [];
+    for (let j = 0; j < input[i].length; j++) {
+      if (input[i][j] === " ") {
+        let count = 0;
 
-  for (let y = 0; y < board.height; y++) {
-    let rowStr = "";
-    for (let x = 0; x < board.width; x++) {
-      let sum = 0;
-      if (hasMine([...board.input[y]][x])) {
-        sum = -1;
-      } else {
-        sum = sumAdjacent(x, y, board);
-      }
-      rowStr = buildRow(sum, rowStr);
-    }
-    return result;
-  }
-
-  const hasMine = (val) => {
-    return val === "*";
-  };
-
-  const sumAdjacent = (x, y, board) => {
-    let sum = 0;
-    for (let i = -1; i < 2; i++) {
-      for (let j = -1; j < 2; j++) {
-        let xCoord = x + i;
-        let yCoord = y + j;
-        if (0 > xCoord || xCoord > board.width - 1) {
-          continue;
-        } else if (0 > yCoord || yCoord > board.height - 1) {
-          continue;
-        } else {
-          if (hasMine([...board.input[yCoord]][xCoord])) {
-            sum++;
+        for (let m = i - 1; m <= i + 1; m++) {
+          for (let n = j - 1; n <= j + 1; n++) {
+            if (
+              m >= 0 &&
+              n >= 0 &&
+              m < input.length &&
+              n < input[i].length &&
+              input[m][n] === "*"
+            ) {
+              count++;
+            }
           }
         }
+
+        result[i] += count === 0 ? " " : count;
+      } else {
+        result[i] += input[i][j];
       }
     }
-    return sum;
-  };
+  }
 
-  const buildRow = (sum, row) => {
-    let newRow;
-    if (sum > 0) {
-      newRow = row + sum;
-    } else if (sum === -1) {
-      newRow = row + "*";
-    } else {
-      newRow = row + " ";
-    }
-    return newRow;
-  };
-
-  const isValid = (input) => {
-    const regex = /[^\* ]/g;
-
-    const isValid = true;
-
-    if (input.length === 0) {
-      return false;
-    }
-    let width = input[0].length;
-    [...input].forEach((e) => {
-      if (regex.test(e)) {
-        isValid = false;
-      } else if ((e.length < 2 && input.length == 1) || e.length != width) {
-        isValid = false;
-      }
-    });
-
-    return isValid;
-  };
+  return result;
 };
+
