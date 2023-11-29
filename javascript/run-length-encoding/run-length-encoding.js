@@ -1,12 +1,31 @@
-//
-// This is only a SKELETON file for the 'Run Length Encoding' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const encode = (input) => {
+  let encoded = "";
+  let count = 1;
 
-export const encode = () => {
-  throw new Error('Remove this statement and implement this function');
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] === input[i + 1]) {
+      count++;
+    } else {
+      encoded += count > 1 ? `${count}${input[i]}` : `${input[i]}`;
+      count = 1;
+    }
+  }
+
+  return encoded;
 };
 
-export const decode = () => {
-  throw new Error('Remove this statement and implement this function');
+export const decode = (input) => {
+  let decoded = "";
+  let count = "";
+
+  for (let i = 0; i < input.length; i++) {
+    if (isNaN(input[i])) {
+      decoded += input[i].repeat(count || 1);
+      count = "";
+    } else {
+      count += input[i];
+    }
+  }
+
+  return decoded;
 };
