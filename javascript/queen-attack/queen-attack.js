@@ -1,21 +1,32 @@
-//
-// This is only a SKELETON file for the 'Queen Attack' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class QueenAttack {
   constructor({
-    black: [blackRow, blackColumn] = [],
-    white: [whiteRow, whiteColumn] = [],
+    black: [blackRow = 7, blackColumn = 3] = [],
+    white: [whiteRow = 0, whiteColumn = 3] = [],
   } = {}) {
-    throw new Error('Remove this statement and implement this function');
+    this.black = [blackRow, blackColumn];
+    this.white = [whiteRow, whiteColumn];
   }
 
   toString() {
-    throw new Error('Remove this statement and implement this function');
+    const board = Array.from({ length: 8 }, () => Array(8).fill("_"));
+    const [whiteRow, whiteColumn] = this.white;
+    const [blackRow, blackColumn] = this.black;
+
+    board[whiteRow][whiteColumn] = "W";
+    board[blackRow][blackColumn] = "B";
+
+    return board.map((row) => row.join(" ")).join("\n");
   }
 
   get canAttack() {
-    throw new Error('Remove this statement and implement this function');
+    const [whiteRow, whiteColumn] = this.white;
+    const [blackRow, blackColumn] = this.black;
+
+    const sameRow = whiteRow === blackRow;
+    const sameColumn = whiteColumn === blackColumn;
+    const sameDiagonal =
+      Math.abs(whiteRow - blackRow) === Math.abs(whiteColumn - blackColumn);
+
+    return sameRow || sameColumn || sameDiagonal;
   }
 }
