@@ -1,46 +1,55 @@
-//
-// This is only a SKELETON file for the 'Zipper' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Zipper {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(tree, focus = null, parent = null) {
+    this.tree = tree;
+    this.focus = focus || tree;
+    this.parent = parent;
   }
 
-  static fromTree() {
-    throw new Error('Remove this statement and implement this function');
+  static fromTree(tree) {
+    return new Zipper(tree);
   }
 
   toTree() {
-    throw new Error('Remove this statement and implement this function');
+    return this.tree;
   }
 
   value() {
-    throw new Error('Remove this statement and implement this function');
+    return this.focus.value;
   }
 
   left() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.focus.left) return null;
+
+    return new Zipper(this.tree, this.focus.left, this.focus);
   }
 
   right() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.focus.right) return null;
+
+    return new Zipper(this.tree, this.focus.right, this.focus);
   }
 
   up() {
-    throw new Error('Remove this statement and implement this function');
+    if (!this.parent) return null;
+
+    return new Zipper(this.tree, this.parent, this.parent.parent);
   }
 
-  setValue() {
-    throw new Error('Remove this statement and implement this function');
+  setValue(newValue) {
+    const newTree = { ...this.tree };
+    this.focus.value = newValue;
+    return new Zipper(newTree, this.focus, this.parent);
   }
 
-  setLeft() {
-    throw new Error('Remove this statement and implement this function');
+  setLeft(leftNode) {
+    const newTree = { ...this.tree };
+    this.focus.left = leftNode;
+    return new Zipper(newTree, this.focus, this.parent);
   }
 
-  setRight() {
-    throw new Error('Remove this statement and implement this function');
+  setRight(rightNode) {
+    const newTree = { ...this.tree };
+    this.focus.right = rightNode;
+    return new Zipper(newTree, this.focus, this.parent);
   }
 }
