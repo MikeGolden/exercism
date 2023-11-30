@@ -1,10 +1,25 @@
-//
-// This is only a SKELETON file for the 'Change' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class Change {
   calculate(coinArray, target) {
-    throw new Error('Remove this statement and implement this function');
+    if (target < 0) {
+      throw new Error("Negative totals are not allowed.");
+    }
+
+    const sortedCoins = coinArray.sort((a, b) => a - b);
+    const change = [];
+
+    let remaining = target;
+    for (const coin of sortedCoins) {
+      if (coin <= remaining) {
+        const count = Math.floor(remaining / coin);
+        remaining -= count * coin;
+        change.push(...Array(count).fill(coin));
+      }
+    }
+
+    if (remaining !== 0) {
+      throw new Error("Cannot make change.");
+    }
+
+    return change;
   }
 }
