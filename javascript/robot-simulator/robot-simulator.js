@@ -1,29 +1,81 @@
-//
-// This is only a SKELETON file for the 'Robot Simulator' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class InvalidInputError extends Error {
   constructor(message) {
     super();
-    this.message = message || 'Invalid Input';
+    this.message = message || "Invalid Input";
   }
 }
 
 export class Robot {
+  static NORTH = "north";
+  static EAST = "east";
+  static SOUTH = "south";
+  static WEST = "west";
+  static BEARINGS = [Robot.NORTH, Robot.EAST, Robot.SOUTH, Robot.WEST];
+  static INSTRUCTIONS = {
+    A: "advance",
+    L: "turnLeft",
+    R: "turnRight",
+  };
+
+  static instructions(chain) {
+    return [...chain].map((instruction) => Robot.INSTRUCTIONS[instruction]);
+  }
+
+  #bearing = Robot.NORTH;
+  #coordinates;
+
   get bearing() {
-    throw new Error('Remove this statement and implement this function');
+    return this.#bearing;
   }
 
   get coordinates() {
-    throw new Error('Remove this statement and implement this function');
+    return [...this.#coordinates];
+  }
+
+  orient(bearing) {
+    if (!Robot.BEARINGS.includes(bearing)) throw new InvalidInputError();
+    this.#bearing = bearing;
+  }
+
+  at(...coordinates) {
+    this.#coordinates = coordinates;
+  }
+
+  turnRight() {
+    this.orient(
+      Robot.BEARINGS[
+        (Robot.BEARINGS.indexOf(this.#bearing) + 1) % Robot.BEARINGS.length
+      ],
+    );
+  }
+
+  turnLeft() {
+    this.orient(
+      Robot.BEARINGS[
+        (Robot.BEARINGS.indexOf(this.#bearing) + 3) % Robot.BEARINGS.length
+      ],
+    );
+  }
+
+  advance() {
+    switch (this.bearing) {
+      case Robot.NORTH:
+        return this.#coordinates[1]++;
+      case Robot.EAST:
+        return this.#coordinates[0]++;
+      case Robot.SOUTH:
+        return this.#coordinates[1]--;
+      case Robot.WEST:
+        return this.#coordinates[0]--;
+    }
   }
 
   place({ x, y, direction }) {
-    throw new Error('Remove this statement and implement this function');
+    this.orient(direction);
+    this.at(x, y);
   }
 
-  evaluate(instructions) {
-    throw new Error('Remove this statement and implement this function');
+  evaluate(chain) {
+    Robot.instructions(chain).forEach((instruction) => this[instruction]());
   }
 }
