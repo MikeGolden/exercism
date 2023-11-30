@@ -1,48 +1,36 @@
-export const encode = (value) => {
-  let result = [];
-  
-  // Loop until value is processed completely
-  while (value > 0) {
-    // Get the lowest 7 bits of the value
-    let byte = value & 0x7F;
+const BITS = 1 << 7;
 
-    // If there are more bits to encode, set the continuation bit (MSB)
-    if (value > 0x7F) byte |= 0x80;
+export const encode = (n) => {
+  return n.map(vlq).flat();
+};
 
-    // Add the byte to the result array
-    result.push(byte);
-
-    // Shift value to the right by 7 bits
-    value >>= 7;
+const vlq = (number) => {
+  if (number === 0) return [0];
+  let code = [];
+  while (number > 0) {
+    code.push(number % BITS);
+    number = Math.floor(number / BITS);
   }
-
-  // If no bytes were added, the value is 0, so add a single zero byte
-  if (result.length === 0) result.push(0);
-
-  // Return the array of bytes in reverse order
-  return result.reverse();
+  return code.map((c, i) => (i ? c + BITS : c)).reverse();
 };
 
 export const decode = (bytes) => {
-  let result = 0;
-  let shift = 0;
-
-  // Loop through each byte in the array
-  for (let i = 0; i < bytes.length; i++) {
-    // Extract the lowest 7 bits from the byte
-    let byte = bytes[i] & 0x7F;
-
-    // Accumulate the byte's value into the result
-    result |= byte << shift;
-
-    // Update the shift by 7 bits for the next iteration
-    shift += 7;
-
-    // Check if the continuation bit (MSB) is not set
-    if ((bytes[i] & 0x80) === 0) {
-      return result;
+  let groups = [],
+    group = [];
+  for (let b of bytes) {
+    group.push(b);
+    if (b < BITS) {
+      groups.push(group);
+      group = [];
     }
   }
-
-  throw new Error('Invalid variable length quantity');
+  if (group.length > 0) throw new Error("Incomplete sequence");
+  return groups.map(vlq_decode);
 };
+
+const bi = (b, i) => (b - BITS) * BITS ** i;
+
+const vlq_decode = (bytes) => {
+  return bytes.reverse().reduce((tot, b, i) => (i ? tot + bi(b, i) : b), 0);
+};
+
