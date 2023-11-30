@@ -1,8 +1,19 @@
-//
-// This is only a SKELETON file for the 'Knapsack' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export const knapsack = (maximumWeight, items) => {
-  throw new Error('Remove this statement and implement this function');
+  const n = items.length;
+  const dp = new Array(n + 1)
+    .fill(0)
+    .map(() => new Array(maximumWeight + 1).fill(0));
+
+  for (let i = 1; i <= n; i++) {
+    const { weight, value } = items[i - 1];
+    for (let w = 1; w <= maximumWeight; w++) {
+      if (weight <= w) {
+        dp[i][w] = Math.max(value + dp[i - 1][w - weight], dp[i - 1][w]);
+      } else {
+        dp[i][w] = dp[i - 1][w];
+      }
+    }
+  }
+
+  return dp[n][maximumWeight];
 };
