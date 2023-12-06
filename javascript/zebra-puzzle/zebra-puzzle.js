@@ -1,18 +1,31 @@
-//
-// This is only a SKELETON file for the 'Zebra Puzzle' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 export class ZebraPuzzle {
   constructor() {
-    throw new Error('Remove this statement and implement this function');
+    this.houses = [
+      { nationality: "Englishman" },
+      { nationality: "Spaniard" },
+      { nationality: "Ukrainian" },
+      { nationality: "Norwegian" },
+      { nationality: "Japanese" },
+    ];
+
+    this.colors = ["red", "green", "ivory", "yellow", "blue"];
+    this.pets = ["dog", "snails", "fox", "horse", "zebra"];
+    this.drinks = ["coffee", "tea", "milk", "orange juice", "water"];
+    this.cigarettes = [
+      "Old Gold",
+      "Kools",
+      "Chesterfields",
+      "Lucky Strike",
+      "Parliaments",
+    ];
+
+    this.positions = [0, 1, 2, 3, 4];
+    this.middleHouse = 2;
+
+    this.solve();
   }
 
-  waterDrinker() {
-    throw new Error('Remove this statement and implement this function');
-  }
+  waterDrinker() {}
 
-  zebraOwner() {
-    throw new Error('Remove this statement and implement this function');
-  }
+  zebraOwner() {}
 }
