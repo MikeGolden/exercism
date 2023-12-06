@@ -1,31 +1,68 @@
 export class ZebraPuzzle {
   constructor() {
     this.houses = [
-      { nationality: "Englishman" },
-      { nationality: "Spaniard" },
-      { nationality: "Ukrainian" },
-      { nationality: "Norwegian" },
-      { nationality: "Japanese" },
-    ];
-
-    this.colors = ["red", "green", "ivory", "yellow", "blue"];
-    this.pets = ["dog", "snails", "fox", "horse", "zebra"];
-    this.drinks = ["coffee", "tea", "milk", "orange juice", "water"];
-    this.cigarettes = [
-      "Old Gold",
-      "Kools",
-      "Chesterfields",
-      "Lucky Strike",
-      "Parliaments",
-    ];
-
-    this.positions = [0, 1, 2, 3, 4];
-    this.middleHouse = 2;
-
-    this.solve();
+      {
+        color: 'red',
+        position: '3',
+        nationality: 'Englishman',
+        beverages: 'Milk',
+        pet: 'Snail',
+        smoke: 'Old Gold'
+      },
+      {
+        color: 'green',
+        position: '5', 
+        nationality: 'Japanese', 
+        beverages: 'Coffee',
+        pet: 'Zebra', 
+        smoke: 'Parliaments'
+      },
+      {
+        color: 'ivory',
+        position: '4', 
+        nationality: 'Spaniard', 
+        beverages: 'Orange Juice', 
+        pet: 'Dog', 
+        smoke: 'Lucky Strike' 
+      },
+      {
+        color: 'yellow',
+        position: '1',
+        nationality: 'Norwegian',
+        beverages: 'Water',
+        pet: 'Fox',
+        smoke: 'Kools'
+      },
+      {
+        color: 'blue',
+        position: '2',
+        nationality: 'Ukrainian',
+        beverages: 'Tea',
+        pet: 'Horse',
+        smoke: 'Chesterfields'
+      },
+    ]
   }
 
-  waterDrinker() {}
+  informationSearched(information){
+    let answer;
+    for (let i = 0; i < this.houses.length; i++) {
+      const house = this.houses[i];
+      
+      for (const key in house) {
+        const value = house[key];
+        if (value === information) {
+          return house['nationality'];
+        }
+      }
+    }
+  }
 
-  zebraOwner() {}
+  waterDrinker() {
+    return this.informationSearched('Water');
+  }
+
+  zebraOwner() {
+    return this.informationSearched('Zebra');
+  }
 }
