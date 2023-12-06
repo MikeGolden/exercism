@@ -7,12 +7,9 @@ export const squareRoot = (radicand) => {
     return radicand;
   }
 
-  let guess = radicand / 2; // Initial guess (can be any initial value)
-  const precision = 0.000001; // Precision for approximation
-
-  while (Math.abs(guess * guess - radicand) > precision) {
-    guess = (guess + radicand / guess) / 2;
+  let sqrt = 1;
+  while (sqrt * sqrt !== radicand) {
+    sqrt++;
   }
-
-  return guess;
+  return sqrt;
 };
