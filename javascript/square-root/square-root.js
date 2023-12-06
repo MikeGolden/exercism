@@ -1,8 +1,18 @@
-//
-// This is only a SKELETON file for the 'Square root' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const squareRoot = (radicand) => {
+  if (radicand < 0) {
+    return NaN; // Square root of negative numbers is undefined
+  }
 
-export const squareRoot = () => {
-  throw new Error('Remove this statement and implement this function');
+  if (radicand === 0 || radicand === 1) {
+    return radicand;
+  }
+
+  let guess = radicand / 2; // Initial guess (can be any initial value)
+  const precision = 0.000001; // Precision for approximation
+
+  while (Math.abs(guess * guess - radicand) > precision) {
+    guess = (guess + radicand / guess) / 2;
+  }
+
+  return guess;
 };
