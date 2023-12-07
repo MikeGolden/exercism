@@ -1,23 +1,41 @@
+const RHYME_DATA = [
+  { character: "house that Jack built.", action: null },
+  { character: "malt", action: "lay in" },
+  { character: "rat", action: "ate" },
+  { character: "cat", action: "killed" },
+  { character: "dog", action: "worried" },
+  { character: "cow with the crumpled horn", action: "tossed" },
+  { character: "maiden all forlorn", action: "milked" },
+  { character: "man all tattered and torn", action: "kissed" },
+  { character: "priest all shaven and shorn", action: "married" },
+  { character: "rooster that crowed in the morn", action: "woke" },
+  { character: "farmer sowing his corn", action: "kept" },
+  { character: "horse and the hound and the horn", action: "belonged to" },
+];
+
 export class House {
-  static verse() {
+  static verse(num) {
+    if (num < 1) return [];
     return [
-      "This is the house that Jack built.",
-      "This is the malt that lay in the house that Jack built.",
-      "This is the rat that ate the malt that lay in the house that Jack built.",
-      "This is the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the man all tattered and torn that kissed the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the priest all shaven and shorn that married the man all tattered and torn that kissed the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the rooster that crowed in the morn that woke the priest all shaven and shorn that married the man all tattered and torn that kissed the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the farmer sowing his corn that kept the rooster that crowed in the morn that woke the priest all shaven and shorn that married the man all tattered and torn that kissed the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
-      "This is the horse and the hound and the horn that belonged to the farmer sowing his corn that kept the rooster that crowed in the morn that woke the priest all shaven and shorn that married the man all tattered and torn that kissed the maiden all forlorn that milked the cow with the crumpled horn that tossed the dog that worried the cat that killed the rat that ate the malt that lay in the house that Jack built.",
+      `This is the ${RHYME_DATA[num - 1].character}`,
+      ...this._remainingLines(num - 1),
     ];
   }
 
-  static verses(startVerse, endVerse) {
-    const allVerses = this.verse();
-    return allVerses.slice(startVerse - 1, endVerse).join("\n") + "\n";
+  static _remainingLines(num) {
+    if (num < 1) return [];
+    return [
+      `that ${RHYME_DATA[num].action} the ${RHYME_DATA[num - 1].character}`,
+      ...this._remainingLines(num - 1),
+    ];
+  }
+
+  static verses(start, end) {
+    let result = [];
+    for (let i = start; i <= end; i++) {
+      result.push(...this.verse(i), "");
+    }
+    result.pop(); // Remove the last empty string
+    return result;
   }
 }
