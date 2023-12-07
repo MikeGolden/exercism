@@ -1,22 +1,16 @@
-export const convert = (numberStr, fromBase, toBase) => {
-  if (isNaN(numberStr) || numberStr === "") {
-    throw new Error("Invalid input");
+export const convert = (digits, fromBase, toBase) => {
+  if (fromBase < 2) throw new Error('Wrong input base');
+  if (toBase < 2) throw new Error('Wrong output base');
+  if (digits.length === 1 && digits[0]*digits[0] === digits[0]) return digits;
+  if (digits.length === 0 || digits[0] === 0 || digits.some(d => d < 0 || d >= fromBase))
+    throw new Error('Input has wrong format');
+
+  let value = digits.reduce((acc, d) => acc*fromBase + d, 0);
+
+  const result = [];
+  while (value) {
+    result.unshift(value % toBase);
+    value = Math.floor(value / toBase);
   }
-
-  if (fromBase === toBase) {
-    return numberStr;
-  }
-
-  const number = parseInt(numberStr, fromBase);
-  const digits = [];
-
-  while (number > 0) {
-    digits.push(number % toBase);
-    number = Math.floor(number / toBase);
-  }
-
-  return digits
-    .reverse()
-    .map((digit) => String.fromCharCode(digit + "0"))
-    .join("");
+  return result;
 };
