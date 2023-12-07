@@ -1,8 +1,22 @@
-//
-// This is only a SKELETON file for the 'All Your Base' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const convert = (numberStr, fromBase, toBase) => {
+  if (isNaN(numberStr) || numberStr === "") {
+    throw new Error("Invalid input");
+  }
 
-export const convert = () => {
-  throw new Error('Remove this statement and implement this function');
+  if (fromBase === toBase) {
+    return numberStr;
+  }
+
+  const number = parseInt(numberStr, fromBase);
+  const digits = [];
+
+  while (number > 0) {
+    digits.push(number % toBase);
+    number = Math.floor(number / toBase);
+  }
+
+  return digits
+    .reverse()
+    .map((digit) => String.fromCharCode(digit + "0"))
+    .join("");
 };
