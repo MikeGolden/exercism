@@ -1,27 +1,60 @@
-//
-// This is only a SKELETON file for the 'Circular Buffer' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
 class CircularBuffer {
-  constructor() {
-    throw new Error('Remove this statement and implement this function');
+  constructor(size) {
+    this.buffer = new Array(size).fill(null);
+    this.size = size;
+    this.start = 0;
+    this.end = 0;
+    this.full = false;
   }
 
-  write() {
-    throw new Error('Remove this statement and implement this function');
+  write(value) {
+    if (this.full) {
+      throw new BufferFullError();
+    }
+
+    this.buffer[this.end] = value;
+    this.end = (this.end + 1) % this.size;
+
+    if (this.end === this.start) {
+      this.full = true;
+    }
   }
 
   read() {
-    throw new Error('Remove this statement and implement this function');
+    if (this.isEmpty()) {
+      throw new BufferEmptyError();
+    }
+
+    const value = this.buffer[this.start];
+    this.buffer[this.start] = null;
+    this.start = (this.start + 1) % this.size;
+    this.full = false;
+    return value;
   }
 
-  forceWrite() {
-    throw new Error('Remove this statement and implement this function');
+  forceWrite(value) {
+    if (this.full) {
+      this.buffer[this.start] = value;
+      this.start = (this.start + 1) % this.size;
+      this.end = (this.end + 1) % this.size;
+    } else {
+      this.write(value);
+    }
   }
 
   clear() {
-    throw new Error('Remove this statement and implement this function');
+    this.buffer.fill(null);
+    this.start = 0;
+    this.end = 0;
+    this.full = false;
+  }
+
+  isEmpty() {
+    return !this.buffer.some((val) => val !== null);
+  }
+
+  isFull() {
+    return this.full;
   }
 }
 
@@ -29,12 +62,14 @@ export default CircularBuffer;
 
 export class BufferFullError extends Error {
   constructor() {
-    throw new Error('Remove this statement and implement this function');
+    super("Buffer is full");
+    this.name = "BufferFullError";
   }
 }
 
 export class BufferEmptyError extends Error {
   constructor() {
-    throw new Error('Remove this statement and implement this function');
+    super("Buffer is empty");
+    this.name = "BufferEmptyError";
   }
 }
