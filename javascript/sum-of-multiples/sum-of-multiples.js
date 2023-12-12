@@ -1,21 +1,23 @@
-export const sum = (level, magicalItems) => {
-  let points = 0;
-  const multiples = new Set();
+//
+// This is only a SKELETON file for the 'Sum Of Multiples' exercise. It's been provided as a
+// convenience to get you started writing code faster.
+//
 
-  // Iterate through each magical item
-  magicalItems.forEach(item => {
-    const baseValue = item;
-
-    // Find all multiples of the base value less than the level
-    for (let i = baseValue; i < level; i += baseValue) {
-      multiples.add(i); // Add unique multiples to a Set
+export const sum = (magicalItem,level) => {
+    let sum=0; 
+  const set=[];
+    for(var i =0; i<magicalItem.length; i++){
+     for(var j=1; j< level;j++){
+       var value=magicalItem[i]*j;
+       if (value>=level) {
+         break;
+       }else {
+         // sum+=value;
+         set.push(value);
+       }
+     }
     }
-  });
-
-  // Sum all unique multiples in the Set
-  for (let num of multiples) {
-    points += num;
-  }
-
-  return points;
-};
+      var final=[...new Set(set)];
+      final.map((each)=>sum+=each)
+      return sum;
+    };
