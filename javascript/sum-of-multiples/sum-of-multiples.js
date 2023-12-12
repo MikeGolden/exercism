@@ -1,8 +1,18 @@
-//
-// This is only a SKELETON file for the 'Sum Of Multiples' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const sum = (level, magicalItems) => {
+  let points = 0;
+  const multiples = new Set();
 
-export const sum = () => {
-  throw new Error('Remove this statement and implement this function');
+  magicalItems.forEach((item) => {
+    const baseValue = item;
+
+    for (let i = baseValue; i < level; i += baseValue) {
+      multiples.add(i);
+    }
+  });
+
+  for (let num of multiples) {
+    points += num;
+  }
+
+  return points;
 };
