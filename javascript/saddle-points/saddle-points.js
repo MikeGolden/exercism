@@ -1,11 +1,13 @@
 export const saddlePoints = (matrix) => {
-  const saddlePoint = [];
+  const saddlePoints = [];
 
+  // Iterate through each cell of the matrix
   for (let row = 0; row < matrix.length; row++) {
     for (let col = 0; col < matrix[0].length; col++) {
       const currentHeight = matrix[row][col];
       let isSaddlePoint = true;
 
+      // Check if current cell is the largest in its row
       for (let i = 0; i < matrix[0].length; i++) {
         if (matrix[row][i] > currentHeight) {
           isSaddlePoint = false;
@@ -13,6 +15,7 @@ export const saddlePoints = (matrix) => {
         }
       }
 
+      // Check if current cell is the smallest in its column
       for (let j = 0; j < matrix.length; j++) {
         if (matrix[j][col] < currentHeight) {
           isSaddlePoint = false;
@@ -20,11 +23,12 @@ export const saddlePoints = (matrix) => {
         }
       }
 
+      // If current cell meets criteria, add as a potential saddle point
       if (isSaddlePoint) {
-        saddlePoint.push([row, col]);
+        saddlePoints.push([row, col]);
       }
     }
   }
 
-  return saddlePoint;
+  return saddlePoints;
 };
