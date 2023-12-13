@@ -1,13 +1,10 @@
-//
-// This is only a SKELETON file for the 'Food Chain' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
-
+// Define an array representing the animals in the song's food chain
 const ANIMALS = [
   'fly', 'spider', 'bird', 'cat',
   'dog', 'goat', 'cow', 'horse',
 ];
 
+// Define rhymes for specific animals in the food chain
 const RHYME = {
   spider: "It wriggled and jiggled and tickled inside her.\n",
   bird: "How absurd to swallow a bird!\n",
@@ -18,6 +15,7 @@ const RHYME = {
   horse: "She's dead, of course!",
 }
 
+// Define a function to determine the reason for swallowing an animal
 const why = (idx) => {
   if (idx == 0) return "I don't know why she swallowed the fly. Perhaps she'll die.";
   let [That, This] = [ANIMALS[idx - 1], ANIMALS[idx]];
@@ -25,6 +23,7 @@ const why = (idx) => {
   return `She swallowed the ${This} to catch the ${That}.`;
 }
 
+// Define a function to create the verses leading up to the animal in the food chain
 const ladder = (animal) => {
   if (animal == 'horse') return '';
   let ret = [];
@@ -33,6 +32,7 @@ const ladder = (animal) => {
   return ret.join("\n");
 }
 
+// Export a class 'Song' with methods to generate verses and groups of verses
 export class Song {
   verse(num) {
     let animal = ANIMALS[num - 1];
