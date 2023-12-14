@@ -1,35 +1,44 @@
 export const recite = (initialBottlesCount, takeDownCount) => {
-  let lyrics = [];
-
-  while (initialBottlesCount >= takeDownCount) {
-    lyrics.push(
-      `${initialBottlesCount} bottles of beer on the wall, ${initialBottlesCount} bottles of beer.`,
-    );
-    initialBottlesCount -= takeDownCount;
-
-    const remaining = initialBottlesCount === 1 ? "bottle" : "bottles";
-    const nextCount =
-      initialBottlesCount > takeDownCount ? takeDownCount : initialBottlesCount;
-
-    if (initialBottlesCount > 0) {
-      lyrics.push(
-        `Take ${nextCount} down and pass it around, ${initialBottlesCount} ${remaining} of beer on the wall.`,
+  // throw new Error('Remove this statement and implement this function');
+  let verse = [];
+  for (
+    let i = initialBottlesCount;
+    i > initialBottlesCount - takeDownCount;
+    i--
+  ) {
+    if (i > 2) {
+      verse.push(`${i} bottles of beer on the wall, ${i} bottles of beer.`);
+      verse.push(
+        `Take one down and pass it around, ${
+          i - 1
+        } bottles of beer on the wall.`,
       );
-    } else {
-      lyrics.push(
-        "Take one down and pass it around, no more bottles of beer on the wall.",
+    } else if (i == 2) {
+      verse.push(`${i} bottles of beer on the wall, ${i} bottles of beer.`);
+      verse.push(
+        `Take one down and pass it around, ${
+          i - 1
+        } bottle of beer on the wall.`,
       );
+    } else if (i == 1) {
+      verse.push(`${i} bottle of beer on the wall, ${i} bottle of beer.`);
+      verse.push(
+        `Take it down and pass it around, no more bottles of beer on the wall.`,
+      );
+    } else if (i == 0) {
+      verse.push(
+        `No more bottles of beer on the wall, no more bottles of beer.`,
+      );
+      verse.push(
+        `Go to the store and buy some more, 99 bottles of beer on the wall.`,
+      );
+    }
+
+    if (i > initialBottlesCount - takeDownCount + 1) {
+      verse.push("");
     }
   }
 
-  if (initialBottlesCount === 0) {
-    lyrics.push(
-      "No more bottles of beer on the wall, no more bottles of beer.",
-    );
-    lyrics.push(
-      "Go to the store and buy some more, 99 bottles of beer on the wall.",
-    );
-  }
-
-  return lyrics;
+  return verse;
 };
+
