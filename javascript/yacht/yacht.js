@@ -1,25 +1,34 @@
+// Hand class representing a set of dice
 class Hand {
   constructor(hand) {
+    // Sorting the hand to facilitate checks
     this.hand = hand;
     this.hand.sort();
+
+    // Counting occurrences of each number in the hand
     this.counts = [0, 0, 0, 0, 0, 0, 0];
     for (const d of hand) {
       this.counts[d]++;
     }
+
+    // Reversing the counts for each number to facilitate specific checks
     this.rev_counts = [[], [], [], [], [], []];
     for (let i = 1; i <= 6; ++i) {
       this.rev_counts[this.counts[i]].push(i);
     }
   }
 
+  // Method to get the count of a specific number
   count(n) {
     return this.counts[n];
   }
 
+  // Getter method to get the sum of all dice in the hand
   get sum() {
     return this.hand.reduce((s, d) => s + d, 0);
   }
 
+  // Getter methods for specific categories
   get yacht() {
     return this.rev_counts[5][0];
   }
@@ -36,6 +45,7 @@ class Hand {
     return this.rev_counts[3][0];
   }
 
+  // Getter method to check for a straight sequence
   get straight() {
     return ["12345", "23456"].includes(this.hand.join(""))
       ? this.hand[0]
@@ -43,8 +53,11 @@ class Hand {
   }
 }
 
+// Function to calculate the score based on category and dice values
 export const score = (dices, category) => {
-  const hand = new Hand(dices);
+  const hand = new Hand(dices); // Creating a Hand object
+
+  // Switch case to determine the category and calculate the score accordingly
   switch (category) {
     case "yacht":
       return hand.yacht ? 50 : 0;
@@ -81,4 +94,3 @@ export const score = (dices, category) => {
       return hand.straight === 2 ? 30 : 0;
   }
 };
-
