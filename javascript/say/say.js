@@ -1,8 +1,52 @@
-//
-// This is only a SKELETON file for the 'Say' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+const basicNumbers = [
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+  "thirteen",
+  "fourteen",
+  "fifteen",
+  "sixteen",
+  "seventeen",
+  "eighteen",
+  "nineteen",
+];
+
+const tensNumbers = [
+  "twenty",
+  "thirty",
+  "forty",
+  "fifty",
+  "sixty",
+  "seventy",
+  "eighty",
+  "ninety",
+];
 
 export const say = (n) => {
-  throw new Error('Remove this statement and implement this function');
+  if (n < 0 || n > 99) {
+    throw new Error("Number out of range (0-99)");
+  }
+
+  if (n < 20) {
+    return basicNumbers[n];
+  }
+
+  const tens = Math.floor(n / 10);
+  const units = n % 10;
+
+  if (units === 0) {
+    return tensNumbers[tens - 2];
+  }
+
+  return `${tensNumbers[tens - 2]}-${basicNumbers[units]}`;
 };
