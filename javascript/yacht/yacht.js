@@ -1,52 +1,84 @@
-// The function 'score' calculates the score of the dice for a given category in the Yacht game
-export const score = (dice, category) => {
-  // Sort the dice in ascending order for some category checks
-  const sortedDice = dice.sort((a, b) => a - b);
+class Hand {
+  constructor(hand) {
+    this.hand = hand;
+    this.hand.sort();
+    this.counts = [0, 0, 0, 0, 0, 0, 0];
+    for (const d of hand) {
+      this.counts[d]++;
+    }
+    this.rev_counts = [[], [], [], [], [], []];
+    for (let i = 1; i <= 6; ++i) {
+      this.rev_counts[this.counts[i]].push(i);
+    }
+  }
 
-  // Function to count the occurrences of a number in the rolled dice
-  const countOccurrences = (num) => dice.filter((d) => d === num).length;
+  count(n) {
+    return this.counts[n];
+  }
 
-  // Function to sum all the rolled dice
-  const sumAllDice = () => dice.reduce((acc, val) => acc + val, 0);
+  get sum() {
+    return this.hand.reduce((s, d) => s + d, 0);
+  }
 
-  // Function to check if the rolled dice satisfy the Full House category
-  const isFullHouse = () => {
-    const uniqueDice = new Set(dice);
-    if (uniqueDice.size !== 2) return false;
-    const counts = Array.from(uniqueDice).map((num) => countOccurrences(num));
-    return counts.includes(2) && counts.includes(3);
-  };
+  get yacht() {
+    return this.rev_counts[5][0];
+  }
 
-  // Switch case to determine the category and calculate the score accordingly
+  get four_of_a_kind() {
+    return this.rev_counts[4][0];
+  }
+
+  get pair() {
+    return this.rev_counts[2][0];
+  }
+
+  get three() {
+    return this.rev_counts[3][0];
+  }
+
+  get straight() {
+    return ["12345", "23456"].includes(this.hand.join(""))
+      ? this.hand[0]
+      : undefined;
+  }
+}
+
+export const score = (dices, category) => {
+  const hand = new Hand(dices);
   switch (category) {
-    case 'Ones':
-      return countOccurrences(1);
-    case 'Twos':
-      return countOccurrences(2) * 2;
-    case 'Threes':
-      return countOccurrences(3) * 3;
-    case 'Fours':
-      return countOccurrences(4) * 4;
-    case 'Fives':
-      return countOccurrences(5) * 5;
-    case 'Sixes':
-      return countOccurrences(6) * 6;
-    case 'Full House':
-      return isFullHouse() ? sumAllDice() : 0;
-    case 'Four of a Kind':
-      for (let i = 1; i <= 6; i++) {
-        if (countOccurrences(i) >= 4) return sumAllDice();
+    case "yacht":
+      return hand.yacht ? 50 : 0;
+    case "choice":
+      return hand.sum;
+    case "ones":
+      return hand.count(1);
+    case "twos":
+      return hand.count(2) * 2;
+    case "threes":
+      return hand.count(3) * 3;
+    case "fours":
+      return hand.count(4) * 4;
+    case "fives":
+      return hand.count(5) * 5;
+    case "sixes":
+      return hand.count(6) * 6;
+    case "four of a kind":
+      if (hand.yacht) {
+        return hand.yacht * 4;
+      }
+      if (hand.four_of_a_kind) {
+        return hand.four_of_a_kind * 4;
       }
       return 0;
-    case 'Little Straight':
-      return sortedDice.join('') === '12345' ? 30 : 0;
-    case 'Big Straight':
-      return sortedDice.join('') === '23456' ? 30 : 0;
-    case 'Choice':
-      return sumAllDice();
-    case 'Yacht':
-      return countOccurrences(dice[0]) === 5 ? 50 : 0;
-    default:
+    case "full house":
+      if (hand.pair && hand.three) {
+        return hand.sum;
+      }
       return 0;
+    case "little straight":
+      return hand.straight === 1 ? 30 : 0;
+    case "big straight":
+      return hand.straight === 2 ? 30 : 0;
   }
 };
+
