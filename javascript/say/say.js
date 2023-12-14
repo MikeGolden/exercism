@@ -1,3 +1,4 @@
+// Object containing English names for numbers from 0 to 90
 const NUM = {
   0: "zero",
   1: "one",
@@ -29,19 +30,24 @@ const NUM = {
   90: "ninety",
 };
 
+// Function to spell out a number in English words
 export const say = (n) => {
   let wordArr = [];
   let str = "";
 
+  // Handling negative numbers
   if (n < 0) throw new Error("Number must be between 0 and 999,999,999,999.");
 
+  // Breaking the number into chunks of thousands
   while (n > 0) {
     wordArr.push(triplet(n % 1000));
     n = Math.floor(n / 1000);
   }
 
+  // Handling the edge case when the number is 0
   if (wordArr.length === 0) return NUM[0];
 
+  // Generating the English representation of the number
   for (let i = wordArr.length - 1; i >= 0; i--) {
     console.log(i);
     switch (i) {
@@ -66,13 +72,17 @@ export const say = (n) => {
   return str.substring(1);
 };
 
+// Function to convert a three-digit number into English words
 function triplet(t) {
   let str = "";
 
+  // Handling hundreds place
   if (t >= 100) {
     str += " " + NUM[Math.floor(t / 100)] + " hundred";
     t %= 100;
   }
+
+  // Handling tens and ones place
   if (t > 20 && t % 10 !== 0) {
     str += " " + NUM[Math.floor(t / 10) * 10] + "-";
     t %= 10;
@@ -82,4 +92,3 @@ function triplet(t) {
   else if (t !== 0) str += NUM[t];
   return str;
 }
-
