@@ -1,69 +1,51 @@
 class WordSearch {
-  constructor() {}
+  constructor(grid) {
+    this.grid = grid;
+    this.possibleDirections = [
+      { horizontal: 0, vertical: 1 },
+      { horizontal: 0, vertical: -1 },
+      { horizontal: 1, vertical: 0 },
+      { horizontal: -1, vertical: 0 },
+      { horizontal: 1, vertical: 1 },
+      { horizontal: -1, vertical: 1 },
+      { horizontal: 1, vertical: -1 },
+      { horizontal: -1, vertical: -1 }
+    ];
+  }
 
-  find(puzzle, words) {
-    // Create an array to store the locations of the words.
-    const locations = [];
-
-    // Iterate over the puzzle.
-    for (let row = 0; row < puzzle.length; row++) {
-      for (let col = 0; col < puzzle[0].length; col++) {
-        // Check if the current letter is the first letter of a word.
-        for (const word of words) {
-          if (puzzle[row][col] === word[0]) {
-            // Store the starting position of the word.
-            let startRow = row;
-            let startCol = col;
-
-            // Store the ending position of the word.
-            let endRow = row;
-            let endCol = col;
-
-            // Iterate over the remaining letters of the word.
-            for (let i = 1; i < word.length; i++) {
-              // Check if the next letter is in the same row and column as the current letter.
-              if (startRow > 0 && puzzle[startRow - 1][startCol] === word[i]) {
-                // Move the starting position up one row.
-                startRow--;
-              } else if (
-                startCol > 0 &&
-                puzzle[startRow][startCol - 1] === word[i]
-              ) {
-                // Move the starting position left one column.
-                startCol--;
-              } else if (
-                endRow < puzzle.length - 1 &&
-                puzzle[endRow + 1][endCol] === word[i]
-              ) {
-                // Move the ending position down one row.
-                endRow++;
-              } else if (
-                endCol < puzzle[0].length - 1 &&
-                puzzle[endRow][endCol + 1] === word[i]
-              ) {
-                // Move the ending position right one column.
-                endCol++;
-              } else {
-                // If the next letter is not in the same row and column as the current letter, then the word is not found.
-                break;
-              }
-            }
-
-            // If the word is found, store the location of the first and last letter.
-            if (startRow <= endRow && startCol <= endCol) {
-              locations.push({
-                word,
-                start: { row: startRow, col: startCol },
-                end: { row: endRow, col: endCol },
-              });
+  find(wordsToSearch) {
+    const wordsLeft = [...wordsToSearch];
+    const foundWords = {};
+    for(let row = 0; row < this.grid.length; row++) {
+      for(let column = 0; column < this.grid[row].length; column++) {
+        wordsLeft.forEach(word => {
+          for(const direction of this.possibleDirections) {
+            const wordCoordenates = this.getWordCoordenates(word, direction, { row, column });
+            if(wordCoordenates) {
+              foundWords[word] = wordCoordenates; 
             }
           }
-        }
+        });
       }
     }
-
-    // Return the array of locations.
-    return locations;
+    return foundWords;
+  }
+  
+  getWordCoordenates(word, direction, initialCoordenate) {
+    for(let i = 0; i < word.length; i++) {
+      const row = initialCoordenate.row + direction.vertical * i;
+      const column = initialCoordenate.column + direction.horizontal * i;
+      if(this.grid[row]?.[column] !== word[i]) {
+        return;
+      }
+    }
+    return { 
+      start: [initialCoordenate.row + 1, initialCoordenate.column + 1],
+      end: [
+        initialCoordenate.row + 1 + (word.length - 1) * direction.vertical,
+        initialCoordenate.column + 1 + (word.length - 1) * direction.horizontal
+      ]
+    };
   }
 }
 
