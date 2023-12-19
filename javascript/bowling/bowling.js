@@ -1,43 +1,104 @@
 export class Bowling {
-  constructor() {
-    // Array to hold the number of pins knocked down in each roll
-    this.rolls = [];
-  }
+  frames = [];
 
-  // Method to record the number of pins knocked down in each roll
-  roll(pins) {
-    this.rolls.push(pins);
-  }
+  roll(points) {
+    if (points < 0) throw new Error("Negative roll is invalid");
+    if (points > 10) throw new Error("Pin count exceeds pins on the lane");
+    if (this.frames > 10) throw new Error("Pin count exceeds pins on the lane");
+    if (this.isGameFinished())
+      throw new Error("Cannot roll after game is over");
 
-  // Method to calculate the total score of the game
-  score() {
-    let totalScore = 0; // Initializing total score to zero
-    let rollIndex = 0; // Initializing roll index for tracking rolls
+    const lastFrame = this.getLastFrame();
 
-    // Helper functions to check frame types and calculate bonuses
-    const isStrike = () => this.rolls[rollIndex] === 10;
-    const strikeBonus = () => this.rolls[rollIndex + 1] + this.rolls[rollIndex + 2];
-    const isSpare = () => this.rolls[rollIndex] + this.rolls[rollIndex + 1] === 10;
-    const spareBonus = () => this.rolls[rollIndex + 2];
-    const sumOfPinsInFrame = () => this.rolls[rollIndex] + this.rolls[rollIndex + 1];
-
-    // Loop through the frames to calculate the total score
-    for (let frame = 0; frame < 10; frame++) {
-      if (isStrike()) {
-        // If it's a strike, add 10 plus the next two rolls' scores to the total score
-        totalScore += 10 + strikeBonus();
-        rollIndex++; // Move to the next frame
-      } else if (isSpare()) {
-        // If it's a spare, add 10 plus the next roll's score to the total score
-        totalScore += 10 + spareBonus();
-        rollIndex += 2; // Move to the next frame
-      } else {
-        // If it's an open frame, add the sum of the two rolls to the total score
-        totalScore += sumOfPinsInFrame();
-        rollIndex += 2; // Move to the next frame
-      }
+    if (this.isNewFrame()) {
+      this.frames.push([points]);
+    } else if (this.frames.length < 10) {
+      if (lastFrame[0] + points > 10)
+        throw new Error("Pin count exceeds pins on the lane");
+      lastFrame.push(points);
+    } else if (
+      lastFrame[0] === 10 &&
+      lastFrame[1] !== 10 &&
+      lastFrame[1] + points > 10
+    ) {
+      throw new Error("Pin count exceeds pins on the lane");
+    } else {
+      lastFrame.push(points);
     }
+  }
 
-    return totalScore; // Return the final total score of the game
+  score() {
+    if (!this.isGameFinished())
+      throw new Error("Score cannot be taken until the end of the game");
+
+    return this.frames
+      .map((frame, i, arr) => {
+        console.log(frame);
+        const isLastFrame = i === 9;
+        if (isLastFrame || this.isOpenFrame(frame))
+          return frame.reduce(sumReducer, 0);
+        else if (this.isFrameSpare(frame)) return 10 + arr[i + 1][0];
+        else
+          return arr[i + 1].length > 1
+            ? 10 + arr[i + 1][0] + arr[i + 1][1]
+            : 10 + arr[i + 1][0] + arr[i + 2][0];
+      })
+      .reduce(sumReducer, 0);
+  }
+
+  isFirstFrame() {
+    return this.frames.length === 0;
+  }
+
+  isNewFrame() {
+    const lastFrame = this.getLastFrame();
+    return (
+      !this.isLastFrame(lastFrame) &&
+      (this.isFirstFrame() || this.isFrameFinished(lastFrame))
+    );
+  }
+
+  getLastFrame() {
+    return this.frames[this.frames.length - 1];
+  }
+
+  getLastFrameScore(frame) {
+    return this.getLastFrame().reduce(sumReducer, 0);
+  }
+
+  isFrameFinished(frame) {
+    return (
+      this.isFrameStrike(frame) ||
+      this.isFrameSpare(frame) ||
+      this.isOpenFrame(frame)
+    );
+  }
+
+  isFrameStrike(frame) {
+    return frame[0] === 10;
+  }
+
+  isFrameSpare(frame) {
+    return frame[0] + frame[1] === 10;
+  }
+
+  isOpenFrame(frame) {
+    return frame.length === 2 && frame.reduce(sumReducer, 0) < 10;
+  }
+
+  isLastFrame(frame) {
+    return this.frames.length > 9;
+  }
+
+  isGameFinished() {
+    return (
+      this.frames.length === 10 &&
+      (this.frames[9].length === 3 ||
+        (this.frames[9].length === 2 &&
+          this.frames[9][0] + this.frames[9][0] < 10))
+    );
   }
 }
+
+const sumReducer = (acc, score) => acc + score;
+
