@@ -1,7 +1,9 @@
 export class Bowling {
-  frames = [];
+  frames = []; // Array to hold frames' scores
 
+  // Method to record the number of pins knocked down in each roll
   roll(points) {
+    // Validation checks for invalid rolls
     if (points < 0) throw new Error("Negative roll is invalid");
     if (points > 10) throw new Error("Pin count exceeds pins on the lane");
     if (this.frames > 10) throw new Error("Pin count exceeds pins on the lane");
@@ -27,6 +29,7 @@ export class Bowling {
     }
   }
 
+  // Method to calculate the total score of the game
   score() {
     if (!this.isGameFinished())
       throw new Error("Score cannot be taken until the end of the game");
@@ -46,6 +49,7 @@ export class Bowling {
       .reduce(sumReducer, 0);
   }
 
+  // Utility methods to check different frame types
   isFirstFrame() {
     return this.frames.length === 0;
   }
@@ -100,5 +104,5 @@ export class Bowling {
   }
 }
 
+// Reducer function to calculate sum
 const sumReducer = (acc, score) => acc + score;
-
