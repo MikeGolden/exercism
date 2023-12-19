@@ -1,69 +1,63 @@
 export const bestHands = (hands) => {
-  const ranks = {
-    "Royal Flush": 10,
-    "Straight Flush": 9,
-    "Four of a Kind": 8,
-    "Full House": 7,
-    Flush: 6,
-    Straight: 5,
-    "Three of a Kind": 4,
-    "Two Pairs": 3,
-    "One Pair": 2,
-    "High Card": 1,
-  };
-
-  const evaluateHand = (hand) => {
-    const cards = hand.split(" ");
-    const values = cards.map((card) => card[0]);
-    const suits = cards.map((card) => card[1]);
-
-    const isFlush = suits.every((suit) => suit === suits[0]);
-    const sortedValues = values.sort((a, b) => a - b);
-
-    const straightValues = "A23456789TJQKA";
-    const isStraight = straightValues.includes(sortedValues.join(""));
-
-    const counts = {};
-    values.forEach((value) => {
-      counts[value] = counts[value] ? counts[value] + 1 : 1;
-    });
-
-    const numCounts = Object.values(counts);
-    const maxCount = Math.max(...numCounts);
-
-    if (isFlush && isStraight && sortedValues[0] === "A") {
-      return { rank: ranks["Royal Flush"], cards };
-    }
-    if (isFlush && isStraight) {
-      return { rank: ranks["Straight Flush"], cards };
-    }
-    if (maxCount === 4) {
-      return { rank: ranks["Four of a Kind"], cards };
-    }
-    if (numCounts.includes(3) && numCounts.includes(2)) {
-      return { rank: ranks["Full House"], cards };
-    }
-    if (isFlush) {
-      return { rank: ranks["Flush"], cards };
-    }
-    if (isStraight) {
-      return { rank: ranks["Straight"], cards };
-    }
-    if (maxCount === 3) {
-      return { rank: ranks["Three of a Kind"], cards };
-    }
-    if (numCounts.filter((count) => count === 2).length === 2) {
-      return { rank: ranks["Two Pairs"], cards };
-    }
-    if (numCounts.includes(2)) {
-      return { rank: ranks["One Pair"], cards };
-    }
-    return { rank: ranks["High Card"], cards };
-  };
-
-  const evaluatedHands = hands.map((hand) => evaluateHand(hand));
-  const highestRank = Math.max(...evaluatedHands.map((h) => h.rank));
-  const bestHands = evaluatedHands.filter((h) => h.rank === highestRank);
-
-  return bestHands.map((h) => h.cards.join(" "));
+  let best = String(hands.map(pokerRank).sort().at(-1));
+  return hands.filter((h) => pokerRank(h) == best);
 };
+
+const CARDS = [
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "10",
+  "J",
+  "Q",
+  "K",
+  "A",
+];
+const count = (arr) =>
+  arr.reduce((cs, x) => ((cs[x] = (cs[x] ?? 0) + 1), cs), {});
+const digit = (d) =>
+  d <= 9 ? d : String.fromCharCode("a".charCodeAt(0) + d - 10);
+function pokerRank(hand) {
+  let ranks = hand
+    .split(" ")
+    .map((card) => 2 + CARDS.indexOf(card.slice(0, -1)))
+    .sort((a, b) => b - a);
+  if (ranks == "14,5,4,3,2") ranks = [5, 4, 3, 2, 1];
+  const counts = Object.values(count(ranks)).sort((a, b) => b - a);
+  const isStraight =
+    counts.length == 5 && 4 == Math.max(...ranks) - Math.min(...ranks);
+  const isFlush =
+    1 == new Set(hand.split(" ").map((card) => card.slice(-1))).size;
+  const cards = Object.entries(count(ranks))
+    .sort((a, b) => b[1] - a[1])
+    .map(([x, _]) => digit(Number(x)));
+  switch (true) {
+    case counts == "5":
+      return [9];
+    case isStraight && isFlush:
+      return [8, ...cards];
+    case counts == "4,1":
+      return [7, ...cards];
+    case counts == "3,2":
+      return [6, ...cards];
+    case isFlush:
+      return [5, ...cards];
+    case isStraight:
+      return [4, ...cards];
+    case counts[0] == 3:
+      return [3, ...cards];
+    case counts == "2,2,1":
+      if (cards[0] < cards[1]) [cards[0], cards[1]] = [cards[1], cards[0]];
+      return [2, ...cards];
+    case counts[0] == 2:
+      return [1, ...cards];
+    default:
+      return [0, ...cards];
+  }
+}
+
