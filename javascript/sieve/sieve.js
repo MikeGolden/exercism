@@ -1,8 +1,20 @@
-//
-// This is only a SKELETON file for the 'Sieve' exercise. It's been provided as a
-// convenience to get you started writing code faster.
-//
+export const primes = (limit) => {
+  const primesArray = [];
+  const sieve = Array(limit + 1).fill(true);
 
-export const primes = () => {
-  throw new Error('Remove this statement and implement this function');
+  for (let num = 2; num <= Math.sqrt(limit); num++) {
+    if (sieve[num]) {
+      for (let multiple = num * num; multiple <= limit; multiple += num) {
+        sieve[multiple] = false;
+      }
+    }
+  }
+
+  for (let i = 2; i <= limit; i++) {
+    if (sieve[i]) {
+      primesArray.push(i);
+    }
+  }
+
+  return primesArray;
 };
