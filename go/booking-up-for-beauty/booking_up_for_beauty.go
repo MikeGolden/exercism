@@ -1,38 +1,54 @@
 package booking
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // Schedule returns a time.Time from a string containing a date.
 func Schedule(date string) time.Time {
 	layout := "1/2/2006 15:04:05"
-	parsedTime, _ := time.Parse(layout, date)
-	return parsedTime
+
+    t, _ := time.Parse(layout,date) 
+
+    return t
 }
 
 // HasPassed returns whether a date has passed.
 func HasPassed(date string) bool {
-	scheduledTime := Schedule(date)
+	layout := "January 2, 2006 15:04:05"
+	appointmentTime, _ := time.Parse(layout, date)
 	currentTime := time.Now()
-	return scheduledTime.Before(currentTime)
+    
+	return appointmentTime.Before(currentTime)
 }
 
 // IsAfternoonAppointment returns whether a time is in the afternoon.
 func IsAfternoonAppointment(date string) bool {
-	scheduledTime := Schedule(date)
-	afternoonStart := time.Date(0, 1, 1, 12, 0, 0, 0, time.UTC)
-	afternoonEnd := time.Date(0, 1, 1, 18, 0, 0, 0, time.UTC)
-	return scheduledTime.After(afternoonStart) && scheduledTime.Before(afternoonEnd)
+	layout := "Monday, January 2, 2006 15:04:05"
+	appointmentTime, _ := time.Parse(layout, date)
+	appointmentHour := appointmentTime.Hour()
+
+	return appointmentHour >= 12 && appointmentHour < 18
 }
 
 // Description returns a formatted string of the appointment time.
-func Description(date string) string {
-	scheduledTime := Schedule(date)
-	return "You have an appointment on " + scheduledTime.Weekday().String() + ", " + scheduledTime.Format("January 2, 2006") + ", at " + scheduledTime.Format("15:04") + "."
+func Description(dateStr string) string {
+	// Define the input date layout that matches the format
+	inputLayout := "1/2/2006 15:04:05"
+
+	appointmentTime, _ := time.Parse(inputLayout, dateStr)
+	outputLayout := "Monday, January 2, 2006, at 15:04"
+	description := fmt.Sprintf("You have an appointment on %s.", appointmentTime.Format(outputLayout))
+
+	return description
 }
 
 // AnniversaryDate returns a Time with this year's anniversary.
 func AnniversaryDate() time.Time {
+	openingDate := time.Date(2020, time.September, 15, 0, 0, 0, 0, time.UTC)
 	currentYear := time.Now().Year()
-	anniversary := time.Date(currentYear, 9, 15, 0, 0, 0, 0, time.UTC)
-	return anniversary
+	anniversaryDate := time.Date(currentYear, openingDate.Month(), openingDate.Day(), 0, 0, 0, 0, time.UTC)
+
+	return anniversaryDate
 }
